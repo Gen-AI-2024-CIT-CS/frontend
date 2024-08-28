@@ -29,19 +29,26 @@ const UserList: React.FC = () => {
       fetchUsers();
     }, []);
   
-if (loading) return <div>Loading...</div>;
-if (error) return <div>{error}</div>;
+    if (loading) return <div className="text-center py-4">Loading...</div>;
+    if (error) return <div className="text-red-500 text-center py-4">{error}</div>;
 
-  return (
-    <div>
-      <h2>User List</h2>
-      <ul>
-        {users.map(user => (
-          <li key={user.id}>{user.id}. {user.name} - {user.email}</li>
-        ))}
-      </ul>
-    </div>
-  );
+    return (
+      <div className="max-w-2xl mx-auto mt-8 p-6 rounded-lg shadow-lg">
+        <h2 className='text-2xl font-bold mb-4 text-center text-white'>User List</h2>
+        <ul className='space-y-2'>
+          {users.map(user => (
+            <li 
+              key={user.id}
+              className="bg-gray-700 p-4 rounded-lg shadow flex justify-evenly items-center hover:bg-gray-600 transition duration-300"
+            >
+              <span className="text-white">User ID: {user.id}</span>
+              <span className="text-white">User Name: {user.name}</span>
+              <span className="text-white">User Email: {user.email}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
 };
 
 export default UserList;
