@@ -6,7 +6,7 @@ const Login = dynamic(() => import('../components/Login'), { ssr: false });
 export default function Home() {
   return (
     <main>
-      <h1 className='text-center font-bold text-3xl m-5'>My App</h1>
+      <h1 className='text-center m-5 font-bold text-3xl'>My App</h1>
       <Login />
       <UserList />
     </main>
