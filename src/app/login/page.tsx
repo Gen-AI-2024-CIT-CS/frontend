@@ -41,22 +41,24 @@ export default function Login() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
-      <div className="flex w-full max-w-4xl bg-white shadow-lg">
+      <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-[10px]" >
         <div className="flex w-1/2 flex-col items-center justify-center p-10">
-          <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center">NPTEL - Automation Tool</h1>
+          <div className='flex flex-row'>
+          <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center hover:text-[#990011] hover:cursor-pointer transition-colors duration-250 ease-in-out">NPTEL</h1><h1 className="mb-2 text-2xl font-bold text-gray-900 text-center"> - Automation Tool</h1>
+          </div>
           <p className="text-sm text-gray-600 text-center">Use your NPTEL Account</p>
         </div>
         <div className="flex w-1/2 flex-col justify-center p-10">
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {success && <p className="text-green-500 text-sm">{success}</p>}
-            <div className="relative">
+            <div className="relative mt-11">
               <input
                 id="email"
                 name="email"
                 type="email"
                 required
-                className="peer w-full rounded-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-transparent focus:border-[#990011] focus:outline-none focus:ring-1 focus:ring-[#990011]"
+                className=" peer w-full rounded-md border border-gray-300 px-3 py-3  text-gray-900 placeholder-transparent focus:border-[#990011] hover:cursor-pointer focus:outline-none focus:ring-1  focus:ring-[#990011]"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -77,7 +79,7 @@ export default function Login() {
                 name="password"
                 type="password"
                 required
-                className="peer w-full rounded-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-transparent focus:border-[#990011] focus:outline-none focus:ring-1 focus:ring-[#990011]"
+                className="peer w-full rounded-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-transparent focus:border-[#990011] hover:cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#990011]"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -103,7 +105,7 @@ export default function Login() {
                   Contact Admin
                 </button>
                 <span 
-                  className={`absolute left-full top-0 ml-2 mt-[12px] whitespace-nowrap overflow-hidden text-xs text-[#990011] transition-all duration-300 ease-in-out ${
+                  className={`absolute left-full top-0 ml-2 mt-[12px] font-medium whitespace-nowrap overflow-hidden text-xs text-[#990011] transition-all duration-300 ease-in-out ${
                     showContactEmail ? 'w-64 opacity-100' : 'w-0 opacity-0'
                   }`}
                 >
@@ -114,7 +116,7 @@ export default function Login() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="rounded-md bg-[#990011] px-4 py-2 text-sm font-medium text-white hover:bg-[#800000] focus:outline-none focus:ring-2 focus:ring-[#990011] focus:ring-offset-2"
+                className="rounded-md bg-[#990011] px-4 py-2 text-sm font-medium text-white hover:bg-[#800000] hover:scale-[1.2] focus:outline-none focus:ring-2 focus:ring-[#990011] focus:ring-offset-2 transition-transform duration-500 ease-in-out"
               >
                 Login
               </button>
