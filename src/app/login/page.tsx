@@ -12,21 +12,16 @@ export default function Login() {
   const [showContactEmail, setShowContactEmail] = useState(false);
   const router = useRouter();
 
-  const clearForm = () => {
-    setEmail('');
-    setPassword('');
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const response = await login(email, password);
       if (response.data.success) {
-        console.log('Logged in successfully', response.data.user);
+        console.log('Logged in successfully');
         setSuccess('Logged in successfully');
-        clearForm();
+
         setTimeout(() => setSuccess(''), 3000);
-        router.push('/dashboard');
+        router.push('/Dashboard');
       }
     } catch (err) {
       setError('Invalid credentials');

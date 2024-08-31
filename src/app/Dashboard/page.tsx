@@ -1,20 +1,63 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import { validUsers } from '../../utils/api';
+import { logout } from '../../utils/api';
+import { useRouter } from 'next/navigation';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+
 
 const Dashboard: React.FC = () => {
+  const [users, setUsers] = useState<User[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState('Select Department');
-
+  const [message,setMessage]=useState('');
+  const router = useRouter();
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleSelectDepartment = (department: string) => {
     setSelectedDepartment(department);
     setIsOpen(false);
   };
-
+  
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await validUsers();
+        const userData = response.data;
+        // Check if userData is an array and has at least one item
+        if (Array.isArray(userData) && userData.length > 0) {
+          setUsers(userData);  // Set the user data in state
+          console.log(userData);
+          setMessage(userData[0].name); // Set the name of the first user
+        } else {
+          console.error('No users found');
+        }
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+      }
+    };
+  
+    fetchUsers();
+  }, []);
+  
   const handleSubmit = () => {
     // Implement your submit logic here
     console.log(`Selected Department: ${selectedDepartment}`);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();  // Call your logout API
+      router.push('/login');  // Redirect to login page
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
 
   return (
@@ -22,6 +65,7 @@ const Dashboard: React.FC = () => {
       {/* Sidebar */}
       <div className="w-full md:w-1/5 bg-[#990011] text-white flex flex-col p-4 justify-between relative">
         <div>
+          <h1>Hello, {message}</h1>
           <h2 className="text-xl font-bold mb-4">Filters</h2>
           <div className="flex flex-col space-y-2">
             <div className="bg-[#77000e] p-2 rounded-md relative">
@@ -60,6 +104,12 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Submit Button */}
+        <button
+          className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
         <button
           className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4"
           onClick={handleSubmit}
