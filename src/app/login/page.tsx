@@ -40,32 +40,37 @@ export default function Login() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
-      <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-[10px]" >
-        <div className="flex w-1/2 flex-col items-center justify-center p-10">
-          <div className='flex flex-row'>
-          <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center hover:text-[#990011] hover:cursor-pointer transition-colors duration-250 ease-in-out">NPTEL</h1><h1 className="mb-2 text-2xl font-bold text-gray-900 text-center"> - Automation Tool</h1>
+    <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6 md:bg-gray-100">
+      <div className="w-full max-w-4xl md:flex md:bg-white md:shadow-lg md:rounded-[10px]">
+        <div className="hidden md:flex md:w-1/2 md:flex-col md:items-center md:justify-center md:p-10">
+          <div className='md:flex md:flex-row'>
+            <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center hover:text-[#990011] hover:cursor-pointer transition-colors duration-250 ease-in-out">NPTEL</h1>
+            <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center"> - Automation Tool</h1>
           </div>
           <p className="text-sm text-gray-600 text-center">Use your NPTEL Account</p>
         </div>
-        <div className="flex w-1/2 flex-col justify-center p-10">
+        <div className="flex w-full flex-col justify-center md:w-1/2 md:p-10">
+          <div className="mb-8 md:hidden">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center text-gray-900">NPTEL - Automation Tool</h1>
+            <p className="mt-2 text-sm text-center text-gray-600">Use your NPTEL Account</p>
+          </div>
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {success && <p className="text-green-500 text-sm">{success}</p>}
-            <div className="relative mt-11">
+            <div className="relative mt-6 md:mt-11">
               <input
                 id="email"
                 name="email"
                 type="email"
                 required
-                className=" peer w-full rounded-md border border-gray-300 px-3 py-3  text-gray-900 placeholder-transparent focus:border-[#990011] hover:cursor-pointer focus:outline-none focus:ring-1  focus:ring-[#990011]"
+                className="peer w-full rounded-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-transparent focus:border-[#990011] hover:cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#990011]"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
               <label
                 htmlFor="email"
-                className="absolute left-3 -top-2 text-xs text-gray-500 transition-all 
+                className="absolute left-3 -top-2 text-xs text-gray-500 hover:cursor-pointer transition-all 
                            peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 
                            peer-placeholder-shown:top-3 peer-focus:-top-2 peer-focus:text-xs 
                            peer-focus:text-[#990011] bg-white px-1"
@@ -86,7 +91,7 @@ export default function Login() {
               />
               <label
                 htmlFor="password"
-                className="absolute left-3 -top-2 text-xs text-gray-500 transition-all 
+                className="absolute left-3 -top-2 text-xs text-gray-500 hover:cursor-pointer transition-all 
                            peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 
                            peer-placeholder-shown:top-3 peer-focus:-top-2 peer-focus:text-xs 
                            peer-focus:text-[#990011] bg-white px-1"
@@ -105,7 +110,7 @@ export default function Login() {
                   Contact Admin
                 </button>
                 <span 
-                  className={`absolute left-full top-0 ml-2 mt-[12px] font-medium whitespace-nowrap overflow-hidden text-xs text-[#990011] transition-all duration-300 ease-in-out ${
+                  className={`absolute left-0 md:left-full top-full md:top-0 mt-2 md:mt-[12px] md:ml-2 font-medium whitespace-nowrap overflow-hidden text-xs text-[#990011] transition-all duration-300 ease-in-out ${
                     showContactEmail ? 'w-64 opacity-100' : 'w-0 opacity-0'
                   }`}
                 >
