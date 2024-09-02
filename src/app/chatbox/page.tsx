@@ -1,50 +1,52 @@
 "use client";
 import React, { useState } from "react";
-import { PaperAirplaneIcon, Bars3Icon } from "@heroicons/react/24/solid";
+import { PaperAirplaneIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 const ChatboxPage: React.FC = () => {
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false); // State to control sidebar visibility
-
-  const toggleDropdown = () => {
-    setDropdownOpen(!isDropdownOpen);
-  };
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!isSidebarOpen);
   };
 
-  return (
-    <div className="flex min-h-screen bg-[#F1F5F9] font-sans">
-      {/* Sidebar with Toggle Visibility */}
-      <aside
-        className={`fixed top-0 left-0 z-40 w-32 md:w-48 lg:w-64 bg-[#8B0000] p-4 md:p-6 text-white shadow-lg transition-transform transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:relative md:translate-x-0 h-full`}
-      >
-        {/* Close Button for Sidebar */}
-        <button
-          className="absolute top-4 right-4 md:hidden text-white"
-          onClick={toggleSidebar}
-        >
-          <Bars3Icon className="h-6 w-6" />
-        </button>
+  const toggleDropdown = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
 
+  return (
+    <div className="flex min-h-screen bg-[#F1F5F9] font-sans relative">
+      {/* Slider Button - Visible Only on Small Screens */}
+      <button
+        className={`fixed top-4 left-4 z-50 text-white bg-[#8B0000] p-2 rounded-full md:hidden transition-transform duration-300 ${
+          isSidebarOpen ? "translate-x-[10rem]" : "translate-x-0"
+        }`}
+        onClick={toggleSidebar}
+      >
+        <ChevronRightIcon className={`h-6 w-6 ${isSidebarOpen ? "rotate-180" : ""}`} />
+      </button>
+
+      {/* Sidebar - Always Visible on Desktop, Sliding on Mobile */}
+      <aside
+        className={`bg-[#8B0000] text-white shadow-lg h-full md:h-screen fixed top-0 left-0 z-40 md:static md:w-44 lg:w-56 p-4 md:p-4 transition-transform duration-300 transform ${
+          isSidebarOpen ? "translate-x-0" : "translate-x-[-100%]"
+        } md:translate-x-0 md:transform-none flex flex-col`} // Increased width for desktop
+      >
         {/* Centered Filters Heading */}
         <h2 className="font-bold text-xs md:text-sm lg:text-lg mb-4 md:mb-6 text-center">Filters</h2>
 
         {/* Dropdown */}
         <div className="mb-4 md:mb-6">
           <button
-            className="flex justify-between items-center w-full py-1 md:py-2 px-2 md:px-4 bg-[#8B0000] text-white rounded-lg shadow-md transition-colors duration-200 hover:bg-[#660000]"
+            className="flex justify-between items-center w-full py-1 md:py-2 px-2 md:px-3 bg-[#8B0000] text-white rounded-lg shadow-md transition-colors duration-200 hover:bg-[#660000]"
             onClick={toggleDropdown}
           >
             Select Department
             <span>{isDropdownOpen ? "▲" : "▼"}</span>
           </button>
           <ul
-            className={`overflow-hidden transition-all duration-500 ease-in-out transform ${
-              isDropdownOpen ? "max-h-60 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-2"
+            className={`overflow-hidden transition-all duration-500 ease-in-out ${
+              isDropdownOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
             } mt-2 bg-[#8B0000] rounded-lg shadow-lg border border-white`}
           >
             {["Cyber Security", "CSE", "ECE", "EEE", "AIML", "AIDS"].map((dept, index) => (
@@ -61,7 +63,7 @@ const ChatboxPage: React.FC = () => {
         </div>
 
         {/* Links */}
-        <div className="text-center">
+        <div className="text-center mt-auto">
           {["Login", "Dashboard", "Chatbot"].map((link, index) => (
             <a
               key={link}
@@ -77,7 +79,7 @@ const ChatboxPage: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 bg-[#F1F5F9] flex flex-col items-center justify-between">
+      <main className="flex-1 p-4 md:p-8 bg-[#F1F5F9] flex flex-col items-center justify-between md:ml-44 lg:ml-56"> {/* Adjusted to match increased sidebar width */}
         {/* Header */}
         <header className="mb-6 py-4 px-4 md:px-6 bg-[#8B0000] text-center text-white rounded-full w-full max-w-4xl relative">
           <h1 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
@@ -100,14 +102,6 @@ const ChatboxPage: React.FC = () => {
           </button>
         </div>
       </main>
-
-      {/* Hamburger Menu Icon */}
-      <button
-        className="fixed top-4 left-4 z-50 md:hidden text-white"
-        onClick={toggleSidebar}
-      >
-        <Bars3Icon className="h-6 w-6" />
-      </button>
     </div>
   );
 };
