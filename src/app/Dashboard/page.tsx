@@ -1,22 +1,20 @@
-"use client";
-import React, { useState,useEffect } from 'react';
-import { validUsers } from '../../utils/api';
-import { logout } from '../../utils/api';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { validUsers, logout } from '../../utils/api';
 import { useRouter } from 'next/navigation';
 
 interface User {
   id: number;
-  name: string;
+  name: string ;
   email: string;
 }
 
-
-
-const Dashboard: React.FC = () => {
+const DashboardComponent: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState('Select Department');
-  const [message,setMessage]=useState('');
+  const [message, setMessage] = useState('');
   const router = useRouter();
   const toggleDropdown = () => setIsOpen(!isOpen);
 
@@ -24,7 +22,7 @@ const Dashboard: React.FC = () => {
     setSelectedDepartment(department);
     setIsOpen(false);
   };
-  
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -39,22 +37,21 @@ const Dashboard: React.FC = () => {
           console.error('No users found');
         }
       } catch (error) {
-        console.error('Failed to fetch users:', error);
+        setMessage('Failed to fetch users');
       }
     };
-  
+
     fetchUsers();
   }, []);
-  
+
   const handleSubmit = () => {
-    // Implement your submit logic here
-    console.log(`Selected Department: ${selectedDepartment}`);
-  };
+    console.log(`Selected Department is ${selectedDepartment}`);
+  }
 
   const handleLogout = async () => {
     try {
-      await logout();  // Call your logout API
-      router.push('/login');  // Redirect to login page
+      await logout();
+      router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }
@@ -135,4 +132,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default DashboardComponent;

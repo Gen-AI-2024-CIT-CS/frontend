@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '../../utils/api';  // Make sure to create this file and function
+import { login } from '../../utils/api';  // Ensure this file and function exist
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,21 +12,22 @@ export default function Login() {
   const [showContactEmail, setShowContactEmail] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const response = await login(email, password);
-      if (response.data.success) {
-        console.log('Logged in successfully');
-        setSuccess('Logged in successfully');
 
-        setTimeout(() => setSuccess(''), 3000);
-        router.push('/Dashboard');
+    try {
+      const res = await login(email, password);
+
+      if (res.status === 200) {
+        // Redirect to dashboard on successful login
+        router.push('/dashboard');
+      } else {
+        // Handle login error
+        setError(res.data.message);
       }
-    } catch (err) {
-      setError('Invalid credentials');
-      setPassword('');
-      setTimeout(() => setError(''), 3000);
+    } catch (error) {
+      // Handle network or other errors
+      setError('An error occurred. Please try again.');
     }
   };
 
@@ -36,10 +37,11 @@ export default function Login() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
-      <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-[10px]" >
+      <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-[10px]">
         <div className="flex w-1/2 flex-col items-center justify-center p-10">
           <div className='flex flex-row'>
-          <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center hover:text-[#990011] hover:cursor-pointer transition-colors duration-250 ease-in-out">NPTEL</h1><h1 className="mb-2 text-2xl font-bold text-gray-900 text-center"> - Automation Tool</h1>
+            <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center hover:text-[#990011] hover:cursor-pointer transition-colors duration-250 ease-in-out">NPTEL</h1>
+            <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center"> - Automation Tool</h1>
           </div>
           <p className="text-sm text-gray-600 text-center">Use your NPTEL Account</p>
         </div>
@@ -53,7 +55,7 @@ export default function Login() {
                 name="email"
                 type="email"
                 required
-                className=" peer w-full rounded-md border border-gray-300 px-3 py-3  text-gray-900 placeholder-transparent focus:border-[#990011] hover:cursor-pointer focus:outline-none focus:ring-1  focus:ring-[#990011]"
+                className="peer w-full rounded-md border border-gray-300 px-3 py-3 text-gray-900 placeholder-transparent focus:border-[#990011] hover:cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#990011]"
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
