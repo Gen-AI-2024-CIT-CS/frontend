@@ -77,31 +77,33 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
-          <nav className="mt-6 space-y-2">
+
+          {/* Spacer to push content to the bottom */}
+          <div className="flex-grow"></div>
+
+          {/* Links moved to the bottom */}
+          <nav className="mt-6 space-y-2 mb-4">
             <a
               href="#"
-              className="block px-3 py-2 rounded-md hover:bg-[hsl(0,64%,58%)]"
+              className="block px-3 py-2 rounded-md hover:bg-[#660000] "
             >
               Login
             </a>
             <a
               href="#"
-              className="block px-3 py-2 rounded-md hover:bg-[hsl(0,64%,58%)]"
+              className="block px-3 py-2 rounded-md hover:bg-[#660000] "
             >
               Dashboard
             </a>
             <a
               href="#"
-              className="block px-3 py-2 rounded-md hover:bg-[hsl(0,64%,58%)]"
+              className="block px-3 py-2 rounded-md hover:bg-[#660000]  "
             >
               Chatbot
             </a>
           </nav>
 
-          {/* Add a spacer div to push the File Upload button to the end of the sidebar */}
-          <div className="flex-grow"></div>
-
-          {/* Submit Button */}
+          {/* File Upload button at the very bottom */}
           <button
             className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4"
             onClick={handleSubmit}
@@ -119,9 +121,9 @@ const Dashboard: React.FC = () => {
             <div className="text-3xl text-black">
               {/* Hamburger Menu Icon */}
               {sidebarOpen ? (
-                <span>&#10005;</span>  // Cross symbol (X) for closing
+                <span>&#10005;</span> // Cross symbol (X) for closing
               ) : (
-                <span>&#9776;</span>  // Hamburger menu (☰) for opening
+                <span>&#9776;</span> // Hamburger menu (☰) for opening
               )}
             </div>
           </button>
