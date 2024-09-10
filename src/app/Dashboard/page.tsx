@@ -42,9 +42,9 @@ const Dashboard: React.FC = () => {
         <div className="flex flex-col justify-start h-full">
           <h2 className="text-xl font-bold mb-4 mt-2">Filters</h2> {/* Reduced top margin */}
           <div className="flex flex-col space-y-2">
-            <div className="bg-[#77000e] p-2 rounded-md relative">
+            <div className=" p-2 rounded-md relative">
               <button
-                className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md focus:outline-none"
+                className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-[0_4px_6px_rgba(0,0,0,0.8)]"
                 onClick={toggleDropdown}
               >
                 {selectedDepartment}
@@ -66,7 +66,7 @@ const Dashboard: React.FC = () => {
                   ].map((dept) => (
                     <li key={dept}>
                       <button
-                        className="w-full text-left hover:bg-[#990011] p-2 rounded-md"
+                        className="w-full text-left np hover:bg-[#990011] p-2 rounded-md"
                         onClick={() => handleSelectDepartment(dept)}
                       >
                         {dept}
