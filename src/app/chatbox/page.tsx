@@ -1,39 +1,60 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { PaperAirplaneIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 const ChatboxPage: React.FC = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(false); // State to control sidebar visibility
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!isSidebarOpen);
+  const openSidebar = () => {
+    setSidebarOpen(true);
   };
 
   const toggleDropdown = () => {
     setDropdownOpen(!isDropdownOpen);
   };
 
+  // Effect to handle clicks outside the sidebar
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target as Node)) {
+        setSidebarOpen(false);
+      }
+    };
+
+    // Add event listener
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // Remove event listener on cleanup
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-[#F1F5F9] font-sans relative">
       {/* Slider Button - Visible Only on Small Screens */}
-      <button
-        className={`fixed top-4 left-4 z-50 text-white bg-[#8B0000] p-2 rounded-full md:hidden transition-transform duration-300 ${
-          isSidebarOpen ? "translate-x-[10rem]" : "translate-x-0"
-        }`}
-        onClick={toggleSidebar}
-      >
-        <ChevronRightIcon className={`h-6 w-6 ${isSidebarOpen ? "rotate-180" : ""}`} />
-      </button>
+      {!isSidebarOpen && ( // Only show button when sidebar is closed
+        <button
+          className="fixed top-4 left-4 z-50 text-white bg-[#8B0000] p-2 rounded-full md:hidden transition-transform duration-300"
+          onClick={openSidebar}
+        >
+          <ChevronRightIcon className="h-6 w-6" />
+        </button>
+      )}
 
       {/* Sidebar - Always Visible on Desktop, Sliding on Mobile */}
       <aside
+        ref={sidebarRef} // Reference for detecting clicks outside
         className={`bg-[#8B0000] text-white shadow-lg h-full md:h-screen fixed top-0 left-0 z-40 md:static md:w-44 lg:w-56 p-4 md:p-4 transition-transform duration-300 transform ${
           isSidebarOpen ? "translate-x-0" : "translate-x-[-100%]"
-        } md:translate-x-0 md:transform-none flex flex-col`} // Increased width for desktop
+        } md:translate-x-0 md:transform-none flex flex-col`}
       >
         {/* Centered Filters Heading */}
-        <h2 className="font-bold text-xs md:text-sm lg:text-lg mb-4 md:mb-6 text-center">Filters</h2>
+        <h2 className="font-bold text-sm md:text-base lg:text-xl mb-4 md:mb-6 text-center">
+          Filters
+        </h2>
 
         {/* Dropdown */}
         <div className="mb-4 md:mb-6">
@@ -79,7 +100,7 @@ const ChatboxPage: React.FC = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 bg-[#F1F5F9] flex flex-col items-center justify-between md:ml-44 lg:ml-56"> {/* Adjusted to match increased sidebar width */}
+      <main className="flex-1 p-4 md:p-8 bg-[#F1F5F9] flex flex-col items-center justify-between md:ml-44 lg:ml-56">
         {/* Header */}
         <header className="mb-6 py-4 px-4 md:px-6 bg-[#8B0000] text-center text-white rounded-full w-full max-w-4xl relative">
           <h1 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
