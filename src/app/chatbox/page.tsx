@@ -3,9 +3,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { PaperAirplaneIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 const ChatboxPage: React.FC = () => {
+<<<<<<< HEAD
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+=======
+  const [isSidebarOpen, setSidebarOpen] = useState(false); // State to control sidebar visibility
+  const [isDropdownOpen, setDropdownOpen] = useState(false); // State to control dropdown visibility
+>>>>>>> d5527e72fd6ddb41cb046aeb962cd89f4be8bc9d
 
   const openSidebar = () => {
     setSidebarOpen(true);
@@ -34,6 +39,7 @@ const ChatboxPage: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-[#F1F5F9] font-sans relative">
+<<<<<<< HEAD
       {/* Slider Button - Visible Only on Small Screens */}
       {!isSidebarOpen && ( // Only show button when sidebar is closed
         <button
@@ -48,6 +54,21 @@ const ChatboxPage: React.FC = () => {
       <aside
         ref={sidebarRef} // Reference for detecting clicks outside
         className={`bg-[#8B0000] text-white shadow-lg h-full md:h-screen fixed top-0 left-0 z-40 md:static md:w-44 lg:w-56 p-4 md:p-4 transition-transform duration-300 transform ${
+=======
+      {/* Sidebar Toggle Button - Visible Only on Small Screens */}
+      <button
+        className={`fixed top-4 left-4 z-50 text-white bg-[#8B0000] p-2 rounded-full md:hidden transition-transform duration-300 ${
+          isSidebarOpen ? "translate-x-[10rem]" : "translate-x-0"
+        }`}
+        onClick={toggleSidebar}
+      >
+        <ChevronRightIcon className={`h-6 w-6 ${isSidebarOpen ? "rotate-180" : ""}`} />
+      </button>
+
+      {/* Sidebar - Always Visible on Desktop, Sliding on Mobile */}
+      <aside
+        className={`bg-[#8B0000] text-white shadow-lg h-full md:h-screen fixed top-0 left-0 z-40 md:static md:w-50 lg:w-64 p-4 md:p-4 transition-transform duration-300 transform ${
+>>>>>>> d5527e72fd6ddb41cb046aeb962cd89f4be8bc9d
           isSidebarOpen ? "translate-x-0" : "translate-x-[-100%]"
         } md:translate-x-0 md:transform-none flex flex-col`}
       >
@@ -57,9 +78,9 @@ const ChatboxPage: React.FC = () => {
         </h2>
 
         {/* Dropdown */}
-        <div className="mb-4 md:mb-6">
+        <div className="flex flex-col space-y-2">
           <button
-            className="flex justify-between items-center w-full py-1 md:py-2 px-2 md:px-3 bg-[#8B0000] text-white rounded-lg shadow-md transition-colors duration-200 hover:bg-[#660000]"
+            className="flex justify-between items-center w-full py-1 md:py-2 px-2 md:px-3  bg-[#8B0000] text-white rounded-lg shadow-[0_4px_6px_rgba(0,0,0,0.8)] transition-colors duration-200 hover:bg-[#660000]"
             onClick={toggleDropdown}
           >
             Select Department
@@ -68,12 +89,12 @@ const ChatboxPage: React.FC = () => {
           <ul
             className={`overflow-hidden transition-all duration-500 ease-in-out ${
               isDropdownOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"
-            } mt-2 bg-[#8B0000] rounded-lg shadow-lg border border-white`}
+            } mt-2 bg-[#8B0000] hover:bg-[#990011] rounded-lg shadow-lg`}
           >
             {["Cyber Security", "CSE", "ECE", "EEE", "AIML", "AIDS"].map((dept, index) => (
               <li
                 key={dept}
-                className={`p-1 md:p-2 border-t border-white cursor-pointer hover:bg-[#660000] transition-opacity duration-300 ${
+                className={`p-1 md:p-2 cursor-pointer hover:bg-[#660000] transition-opacity duration-300 ${
                   isDropdownOpen ? `animate-float delay-${index * 100}` : ""
                 }`}
               >
@@ -101,8 +122,9 @@ const ChatboxPage: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-8 bg-[#F1F5F9] flex flex-col items-center justify-between md:ml-44 lg:ml-56">
+      <main className="flex-1 p-4 md:p-8 bg-[#F1F5F9] flex flex-col items-center justify-between md:ml-48 lg:ml-64">
         {/* Header */}
-        <header className="mb-6 py-4 px-4 md:px-6 bg-[#8B0000] text-center text-white rounded-full w-full max-w-4xl relative">
+        <header className="mb-6 py-4 px-4 md:px-6 bg-[#8B0000] text-center text-white rounded-full w-full max-w-4xl flex justify-center items-center">
           <h1 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
             Chatbot - Nptel Automation Tool
           </h1>
