@@ -85,19 +85,19 @@ const Dashboard: React.FC = () => {
           <nav className="mt-6 space-y-2 mb-4">
             <a
               href="#"
-              className="block px-3 py-2 rounded-md hover:bg-[#660000] "
+              className="block px-3 py-2  text-center rounded-md hover:bg-[#660000] "
             >
               Login
             </a>
             <a
               href="#"
-              className="block px-3 py-2 rounded-md hover:bg-[#660000] "
+              className="block px-3 py-2 text-center rounded-md hover:bg-[#660000] "
             >
               Dashboard
             </a>
             <a
               href="#"
-              className="block px-3 py-2 rounded-md hover:bg-[#660000]  "
+              className="block px-3 py-2 text-center rounded-md hover:bg-[#660000]  "
             >
               Chatbot
             </a>
