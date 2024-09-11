@@ -40,10 +40,10 @@ const ChatboxPage: React.FC = () => {
         </button>
       )}
 
-      {/* Sidebar - Always Visible on Desktop, Sliding on Mobile */}
+      {/* Sidebar - Tightly aligned to the left */}
       <aside
         ref={sidebarRef}
-        className={`bg-[#8B0000] text-white shadow-lg h-full md:h-screen fixed top-0 left-0 z-40 md:static md:w-44 lg:w-56 p-4 md:p-4 transition-transform duration-300 transform ${
+        className={`bg-[#8B0000] text-white shadow-lg h-full md:h-screen fixed top-0 left-0 z-40 md:static md:w-60 lg:w-72 p-4 md:p-6 transition-transform duration-300 transform ${
           isSidebarOpen ? "translate-x-0" : "translate-x-[-100%]"
         } md:translate-x-0 md:transform-none flex flex-col`}
       >
@@ -95,10 +95,10 @@ const ChatboxPage: React.FC = () => {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 bg-[#F1F5F9] flex flex-col items-center justify-between md:ml-44 lg:ml-56">
-        {/* Header */}
-        <header className="mb-6 py-4 px-4 md:px-6 bg-[#8B0000] text-center text-white rounded-full w-full max-w-4xl relative">
+      {/* Main Content - Centering content */}
+      <main className="flex-1 p-4 md:p-8 bg-[#F1F5F9] flex flex-col items-center justify-center">
+        {/* Header - Increased Width and Centered */}
+        <header className="mb-6 py-4 px-4 md:px-6 bg-[#8B0000] text-center text-white rounded-full max-w-2xl w-full flex justify-center">
           <h1 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
             Chatbot - Nptel Automation Tool
           </h1>
@@ -107,8 +107,8 @@ const ChatboxPage: React.FC = () => {
         {/* Spacer */}
         <div className="flex-grow"></div>
 
-        {/* Text Input with Send Icon */}
-        <div className="relative w-full max-w-4xl mb-8">
+        {/* Text Input with Send Icon - Increased Width and Centered */}
+        <div className="relative max-w-2xl w-full mb-8 flex justify-center">
           <input
             type="text"
             placeholder="Enter Text"
