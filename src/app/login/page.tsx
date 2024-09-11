@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '../../utils/api';  // Make sure to create this file and function
+import { login } from '../../utils/api';  // Ensure this file and function exist
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -12,26 +12,22 @@ export default function Login() {
   const [showContactEmail, setShowContactEmail] = useState(false);
   const router = useRouter();
 
-  const clearForm = () => {
-    setEmail('');
-    setPassword('');
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     try {
-      const response = await login(email, password);
-      if (response.data.success) {
-        console.log('Logged in successfully', response.data.user);
-        setSuccess('Logged in successfully');
-        clearForm();
-        setTimeout(() => setSuccess(''), 3000);
+      const res = await login(email, password);
+
+      if (res.status === 200) {
+        // Redirect to dashboard on successful login
         router.push('/dashboard');
+      } else {
+        // Handle login error
+        setError(res.data.message);
       }
-    } catch (err) {
-      setError('Invalid credentials');
-      setPassword('');
-      setTimeout(() => setError(''), 3000);
+    } catch (error) {
+      // Handle network or other errors
+      setError('An error occurred. Please try again.');
     }
   };
 
