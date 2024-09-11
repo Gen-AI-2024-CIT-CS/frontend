@@ -1,17 +1,7 @@
-'use client';
+"use client";
+import React, { useState } from "react";
 
-import React, { useState, useEffect } from 'react';
-import { validUsers, logout } from '../../utils/api';
-import { useRouter } from 'next/navigation';
-
-interface User {
-  id: number;
-  name: string ;
-  email: string;
-}
-
-const DashboardComponent: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+const Dashboard: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState(
@@ -26,37 +16,8 @@ const DashboardComponent: React.FC = () => {
     setIsOpen(false);
   };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await validUsers();
-        const userData = response.data;
-        // Check if userData is an array and has at least one item
-        if (Array.isArray(userData) && userData.length > 0) {
-          setUsers(userData);  // Set the user data in state
-          console.log(userData);
-          setMessage(userData[0].name); // Set the name of the first user
-        } else {
-          console.error('No users found');
-        }
-      } catch (error) {
-        setMessage('Failed to fetch users');
-      }
-    };
-
-    fetchUsers();
-  }, []);
-
   const handleSubmit = () => {
     console.log(`Selected Department: ${selectedDepartment}`);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
   };
 
   return (
@@ -141,19 +102,15 @@ const DashboardComponent: React.FC = () => {
               Chatbot
             </a>
           </nav>
-        {/* Submit Button */}
-        <button
-          className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
-        <button
-          className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4"
-          onClick={handleSubmit}
-        >
-          File Upload
-        </button>
+
+          {/* File Upload button at the very bottom */}
+          <button
+            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4"
+            onClick={handleSubmit}
+          >
+            File Upload
+          </button>
+        </div>
       </div>
 
       {/* Main Content */}
@@ -203,4 +160,4 @@ const DashboardComponent: React.FC = () => {
   );
 };
 
-export default DashboardComponent;
+export default Dashboard;

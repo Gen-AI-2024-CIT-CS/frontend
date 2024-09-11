@@ -12,5 +12,7 @@ export const getUsers = () => api.get('/users');
 export const validUsers = () => api.get('auth/users');
 export const logout = () => api.post('auth/logout');
 export const login = (email: string, password: string) => api.post('/auth/login', { email, password });
+export const chat = (message: string) => api.post('/chat', { message });
+
 
 export default api;

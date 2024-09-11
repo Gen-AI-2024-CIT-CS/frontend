@@ -1,11 +1,24 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { PaperAirplaneIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
+import { chat } from '../../utils/api';
 
 const ChatboxPage: React.FC = () => {
+  const [message, setMessage] = useState<string>(""); // Message input
+  const [response, setResponse] = useState<string>(""); 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+
+  const handleSend = async () => {
+    try {
+      const res = await chat(message);
+      console.log(res.data); // Check what data you get
+      setResponse(res.data.sql); // Update the response state with data from backend
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   const openSidebar = () => {
     setSidebarOpen(true);
@@ -32,7 +45,7 @@ const ChatboxPage: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-[#F1F5F9] font-sans relative">
       {!isSidebarOpen && (
-        <button
+        <button title="Open"
           className="fixed top-4 left-4 z-50 text-white bg-[#8B0000] p-2 rounded-full md:hidden transition-transform duration-300"
           onClick={openSidebar}
         >
@@ -97,28 +110,39 @@ const ChatboxPage: React.FC = () => {
 
       {/* Main Content - Centering content */}
       <main className="flex-1 p-4 md:p-8 bg-[#F1F5F9] flex flex-col items-center justify-center">
-        {/* Header - Increased Width and Centered */}
-        <header className="mb-6 py-4 px-4 md:px-6 bg-[#8B0000] text-center text-white rounded-full max-w-2xl w-full flex justify-center">
-          <h1 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
-            Chatbot - Nptel Automation Tool
-          </h1>
-        </header>
+      {/* Header */}
+      <header className="mb-6 py-4 px-4 md:px-6 bg-[#8B0000] text-center text-white rounded-full max-w-2xl w-full flex justify-center">
+        <h1 className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis">
+          Chatbot - Nptel Automation Tool
+        </h1>
+      </header>
 
-        {/* Spacer */}
-        <div className="flex-grow"></div>
+      {/* Spacer */}
+      <div className="flex-grow"></div>
 
-        {/* Text Input with Send Icon - Increased Width and Centered */}
-        <div className="relative max-w-2xl w-full mb-8 flex justify-center">
-          <input
-            type="text"
-            placeholder="Enter Text"
-            className="w-full p-4 pr-16 rounded-full bg-white shadow-inner text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8B0000] transition duration-200"
-          />
-          <button className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-[#8B0000] text-white rounded-full hover:bg-[#500000] transition-colors duration-200">
-            <PaperAirplaneIcon className="h-6 w-6" />
-          </button>
-        </div>
-      </main>
+      {/* Text Input with Send Icon */}
+      <div className="relative max-w-2xl w-full mb-8 flex flex-col items-center">
+      <input
+        type="text"
+        placeholder="Enter Text"
+        className="w-full p-4 pr-16 rounded-full bg-white shadow-inner text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#8B0000] transition duration-200"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+      <button
+        title="send"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 bg-[#8B0000] text-white rounded-full hover:bg-[#500000] transition-colors duration-200"
+        onClick={handleSend}
+      >
+        <PaperAirplaneIcon className="h-6 w-6" />
+      </button>
+      {/* Display Bot Response */}
+      <div className="mt-4 p-4 bg-white border border-gray-200 rounded-lg shadow-md text-black">
+        <h2 className="text-lg font-semibold">Bot Response:</h2>
+        <p>{response}</p>
+      </div>
+    </div>
+    </main>
     </div>
   );
 };
