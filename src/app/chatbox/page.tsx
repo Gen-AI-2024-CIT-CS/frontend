@@ -33,34 +33,59 @@ const ChatboxPage: React.FC = () => {
     setIsOpen(false);
   };
 
-  const handleSubmit = () => {
-    console.log(`Selected Department: ${selectedDepartment}`);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = () => {
+    // Trigger the file input dialog
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log('Selected file:', file);
+      // You can now upload the file to the server or process it
+    }
   };
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!message.trim()) return;
-
+  
+    // Add user message to the chat history
     setChatHistory(prev => [...prev, { type: 'user', content: message }]);
-
+  
     try {
+      // Call the chat API with the message
       const res = await chat(message);
-      setChatHistory(prev => [...prev, { type: 'bot', content: res.data.data }]);
+  
+      // Check if the response data is empty
+      if (res.data.data.length === 0) {
+        // Add 'not found' message to the chat history
+        setChatHistory(prev => [...prev, { type: 'bot', content: 'No results found' }]);
+      } else {
+        // Add bot response to the chat history
+        setChatHistory(prev => [...prev, { type: 'bot', content: res.data.data }]);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
+      
+      // Add error message to the chat history
       setChatHistory(prev => [...prev, { type: 'bot', content: 'Sorry, an error occurred.' }]);
     }
-
+  
+    // Clear the input message
     setMessage('');
   };
+  
 
   const handleLogout = async () => {
     try {
       // Call the logout API
       await logout();
-      
-      // Perform any additional actions such as clearing cookies, localStorage, etc.
-      // Redirect to the login page after logout
       router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
@@ -97,7 +122,7 @@ const ChatboxPage: React.FC = () => {
           <div className="flex flex-col space-y-2">
             <div className=" p-2 rounded-md relative">
               <button
-                className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-[0_4px_6px_rgba(0,0,0,0.8)]"
+                className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95"
                 onClick={toggleDropdown}
               >
                 {selectedDepartment}
@@ -105,7 +130,7 @@ const ChatboxPage: React.FC = () => {
               </button>
               <div
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  isOpen ? "max-h-60" : "max-h-0"
+                  isOpen ? "max-h-screen" : "max-h-0"
                 }`}
               >
                 <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-md">
@@ -130,39 +155,45 @@ const ChatboxPage: React.FC = () => {
               </div>
             </div>
           </div>
-
+          {/* Spacer to push content to the bottom */}
+          <div className="flex flex-col items-center justify-center h-full w-full">
           {/* Spacer to push content to the bottom */}
           <div className="flex-grow"></div>
 
           {/* Links moved to the bottom */}
-          <nav className="mt-6 space-y-2 mb-4">
-          <button
-            onClick={handleLogout}
-            className="block px-3 py-2 text-center rounded-md hover:bg-[#660000]"
-          >
-            Logout
-          </button>
-          <button
-            onClick={handleLogout}
-            className="block px-3 py-2 text-center rounded-md hover:bg-[#660000]"
-          >
-            Dashboard
-          </button>
-          <button
-            onClick={handleLogout}
-            className="block px-3 py-2 text-center rounded-md hover:bg-[#660000]"
-          >
-            Chatbot
-          </button>
+          <nav className="mt-6 space-y-2 mb-4 w-full max-w-md">
+            <button
+              onClick={()=>{router.push('/dashboard')}}
+              className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95"
+            >
+              Dashboard
+            </button>
+            <>
+            <input
+              title="SendFile"
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <button
+              onClick={handleFileUpload}
+              className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95 border-white border-[1px]"
+            >
+              Upload File
+            </button>
+          </>
+            
           </nav>
 
           {/* File Upload button at the very bottom */}
           <button
-            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4"
-            onClick={handleSubmit}
+            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4 w-full max-w-md transition transform duration-200 hover:scale-95"
+            onClick={handleLogout}
           >
-            File Upload
+            Logout
           </button>
+        </div>
         </div>
       </div>
       {/* Main Content */}
@@ -213,16 +244,16 @@ const ChatboxPage: React.FC = () => {
             <input
               type="text"
               placeholder="Enter Text"
-              className="flex-grow p-2 rounded-l-2xl border  border-gray-300 transition transform duration-200 focus:outline-none focus:ring-1 focus:ring-[#990011]"
+              className="flex-grow p-1.5 rounded-l-xl border border-gray-300 transition transform duration-200 focus:outline-none hover:ring-1 hover:ring-[#990011]"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
             <button
               title="send"
               type="submit"
-              className="p-2 bg-[#990011] text-white rounded-r-full hover:bg-[#660000] transition transform duration-200 hover:scale-110"
+              className="p-2 bg-[#990011] text-white rounded-r-full hover:bg-[#660000] transition transform duration-200 hover:scale-95"
             >
-              <PaperAirplaneIcon className="h-6 w-6 transition transform duration-200 hover:scale-110" />
+              <PaperAirplaneIcon className="h-6 w-6 transition transform duration-200 hover:scale-95" />
             </button>
           </form>
         </div>

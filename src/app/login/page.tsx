@@ -115,7 +115,7 @@ export default function Login() {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="rounded-md bg-[#990011] px-4 py-2 text-sm font-medium text-white hover:bg-[#800000] hover:scale-[1.2] focus:outline-none focus:ring-2 focus:ring-[#990011] focus:ring-offset-2 transition-transform duration-500 ease-in-out"
+                className="rounded-md bg-[#990011] px-4 py-2 text-sm font-medium text-white hover:bg-[#800000] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#990011] focus:ring-offset-2 transition-transform duration-200 ease-in-out"
               >
                 Login
               </button>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState,useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { logout } from '../../utils/api';
 
@@ -25,16 +25,29 @@ const Dashboard: React.FC = () => {
     }
   };  
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = () => {
+    // Trigger the file input dialog
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log('Selected file:', file);
+      // You can now upload the file to the server or process it
+    }
+  };
+
   const toggleDropdown = () => setIsOpen(!isOpen);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   const handleSelectDepartment = (department: string) => {
     setSelectedDepartment(department);
     setIsOpen(false);
-  };
-
-  const handleSubmit = () => {
-    console.log(`Selected Department: ${selectedDepartment}`);
   };
 
   return (
@@ -61,7 +74,7 @@ const Dashboard: React.FC = () => {
           <div className="flex flex-col space-y-2">
             <div className=" p-2 rounded-md relative">
               <button
-                className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-[0_4px_6px_rgba(0,0,0,0.8)]"
+                className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95"
                 onClick={toggleDropdown}
               >
                 {selectedDepartment}
@@ -69,10 +82,10 @@ const Dashboard: React.FC = () => {
               </button>
               <div
                 className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  isOpen ? "max-h-60" : "max-h-0"
+                  isOpen ? "max-h-full" : "max-h-0"
                 }`}
               >
-                <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-md">
+                <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg">
                   {[
                     "Cyber Security",
                     "CSE",
@@ -94,39 +107,44 @@ const Dashboard: React.FC = () => {
               </div>
             </div>
           </div>
-
+          {/* Spacer to push content to the bottom */}
+          <div className="flex flex-col items-center justify-center h-full w-full">
           {/* Spacer to push content to the bottom */}
           <div className="flex-grow"></div>
 
           {/* Links moved to the bottom */}
-          <nav className="mt-6 space-y-2 mb-4">
-          <button
-            onClick={handleLogout}
-            className="block px-3 py-2 text-center rounded-md hover:bg-[#660000]"
-          >
-            Logout
-          </button>
-          <button
-            onClick={handleLogout}
-            className="block px-3 py-2 text-center rounded-md hover:bg-[#660000]"
-          >
-            Dashboard
-          </button>
-          <button
-            onClick={handleLogout}
-            className="block px-3 py-2 text-center rounded-md hover:bg-[#660000]"
-          >
-            Chatbot
-          </button>
+          <nav className="mt-6 space-y-2 mb-4 w-full max-w-md">
+            <button
+              onClick={()=>{router.push('/chatbox')}}
+              className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95"
+            >
+              ChatBot
+            </button>
+            <>
+            <input
+              title="SendFile"
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              onChange={handleFileChange}
+            />
+            <button
+              onClick={handleFileUpload}
+              className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95 border-white border-[1px]"
+            >
+              Upload File
+            </button>
+          </>
           </nav>
 
           {/* File Upload button at the very bottom */}
           <button
-            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4"
-            onClick={handleSubmit}
+            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4 w-full max-w-md transition transform duration-200 hover:scale-95"
+            onClick={handleLogout}
           >
-            File Upload
+            Logout
           </button>
+        </div>
         </div>
       </div>
 
