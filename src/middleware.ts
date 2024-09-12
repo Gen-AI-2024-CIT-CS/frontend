@@ -1,4 +1,3 @@
-// middleware.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 export function middleware(req: NextRequest) {
@@ -17,7 +16,7 @@ export function middleware(req: NextRequest) {
   try {
     // Optionally verify the token if you want to add extra security.
     // jwt.verify(token, process.env.JWT_SECRET);
-    console.log('Token is valid, proceeding to dashboard');
+    console.log('Token is valid, proceeding...');
     return NextResponse.next();
   } catch (err) {
     console.log('Token verification failed, redirecting to login', err);
@@ -26,5 +25,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*'], // Match all routes under /dashboard
+  matcher: ['/dashboard/:path*','/chatbox/:path*'], // Match all routes under /dashboard
 };
