@@ -9,9 +9,28 @@ const api = axios.create({
 });
 
 export const getUsers = () => api.get('/users');
-export const validUsers = () => api.get('auth/users');
-export const logout = () => api.post('auth/logout');
-export const login = (email: string, password: string) => api.post('/auth/login', { email, password });
+export const validUsers = () => api.get('auth/users/role');
+export const logout = async () => {
+  try {
+    await api.post('/auth/logout');
+    // Clear role from local storage
+    localStorage.removeItem('user_role');
+  } catch (error) {
+    throw error;
+  }
+};
+export const login = async (email: string, password: string) => {
+  try {
+    const response = await api.post('/auth/login', { email, password });
+    if (response.data.success) {
+      // Store role in local storage
+      localStorage.setItem('user_role', response.data.role);
+    }
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 export const chat = (message: string) => api.post('/chat', { message });
 
 

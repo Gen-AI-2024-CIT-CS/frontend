@@ -1,5 +1,5 @@
 "use client";
-import React, { useState,useRef } from "react";
+import React, { useState,useRef,useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { logout } from '../../utils/api';
 
@@ -9,8 +9,15 @@ const Dashboard: React.FC = () => {
   const [selectedDepartment, setSelectedDepartment] = useState(
     "Select Department"
   );
-
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [showMessage, setShowMessage] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    // Fetch user role from localStorage or your state management solution
+    const role = localStorage.getItem('user_role'); // Or however you store the user role
+    setUserRole(role);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -39,6 +46,16 @@ const Dashboard: React.FC = () => {
     if (file) {
       console.log('Selected file:', file);
       // You can now upload the file to the server or process it
+    }
+  };
+
+  const handleChatboxAccess = () => {
+    if (userRole === 'admin') {
+      router.push('/chatbox');
+      router.refresh();
+    } else {
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000); // Hide message after 3 seconds
     }
   };
 
@@ -113,9 +130,16 @@ const Dashboard: React.FC = () => {
           <div className="flex-grow"></div>
 
           {/* Links moved to the bottom */}
+            {showMessage && (
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="bg-red-500 text-white p-4 rounded-md shadow-lg">
+                  Could not access ChatBot. Please contact admin.
+                </div>
+              </div>
+            )}
           <nav className="mt-6 space-y-2 mb-4 w-full max-w-md">
             <button
-              onClick={()=>{router.push('/chatbox')}}
+              onClick={handleChatboxAccess}
               className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95"
             >
               ChatBot
