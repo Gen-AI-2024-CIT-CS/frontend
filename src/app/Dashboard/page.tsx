@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { logout } from '../../utils/api';
 import Bargraph from '@/components/Bargraph';
 import RegisteredStudents from '@/components/RegisteredStudents';
+import FileUploadButton from "@/components/FileUpload";
 import ExamRegistered from '@/components/ExamRegisteredStudent';
 
 const Dashboard: React.FC = () => {
@@ -155,12 +156,7 @@ const Dashboard: React.FC = () => {
               className="hidden"
               onChange={handleFileChange}
             />
-            <button
-              onClick={handleFileUpload}
-              className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95 border-white border-[1px]"
-            >
-              Upload File
-            </button>
+            <FileUploadButton />
           </>
           </nav>
 
