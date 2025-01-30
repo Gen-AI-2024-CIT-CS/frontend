@@ -9,6 +9,7 @@ interface User {
   id: number;
   name: string;
   email: string;
+  role: string;
 }
 
 interface ChatMessage {
@@ -55,32 +56,45 @@ const ChatboxPage: React.FC = () => {
     
     if (!message.trim()) return;
   
-    // Add user message to the chat history
     setChatHistory(prev => [...prev, { type: 'user', content: message }]);
   
     try {
-      // Call the chat API with the message
       const res = await chat(message);
-  
-      // Check if the response data is empty
-      if (res.data.data.length === 0) {
-        // Add 'not found' message to the chat history
-        setChatHistory(prev => [...prev, { type: 'bot', content: 'No results found' }]);
+      // Handle different response types
+      if (res.data.response === 'No student found with this name. Please try again.') {
+        // Handle "no student found" case
+        setChatHistory(prev => [...prev, { 
+          type: 'bot', 
+          content: 'No student found with this name. Please try again.' 
+        }]);
+      } else if (res.data.email && res.data.id && res.data.name && res.data.role) {
+        // Handle user data response
+        setChatHistory(prev => [...prev, { 
+          type: 'bot', 
+          content: [{
+            id: res.data.id,
+            name: res.data.name,
+            email: res.data.email,
+            role: res.data.role
+          }]
+        }]);
       } else {
-        // Add bot response to the chat history
-        setChatHistory(prev => [...prev, { type: 'bot', content: res.data.data }]);
+        // Handle any other response type
+        setChatHistory(prev => [...prev, { 
+          type: 'bot', 
+          content: 'Sorry, I could not process that request.' 
+        }]);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      
-      // Add error message to the chat history
-      setChatHistory(prev => [...prev, { type: 'bot', content: 'Sorry, an error occurred.' }]);
+      setChatHistory(prev => [...prev, { 
+        type: 'bot', 
+        content: 'Sorry, an error occurred.' 
+      }]);
     }
   
-    // Clear the input message
     setMessage('');
   };
-  
 
   const handleLogout = async () => {
     try {
@@ -91,6 +105,34 @@ const ChatboxPage: React.FC = () => {
       console.error('Logout failed:', error);
     }
   };  
+
+  const renderMessage = (msg: ChatMessage) => {
+    return (
+      <div className={`p-3 mb-2 rounded-lg ${
+        msg.type === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100 mr-auto'
+      } max-w-3/4`}>
+        <strong>{msg.type === 'user' ? 'You: ' : 'Bot: '}</strong>
+        {typeof msg.content === 'string' ? (
+          <p>{msg.content}</p>
+        ) : (
+          Array.isArray(msg.content) && msg.content.length > 0 ? (
+            <ul>
+              {msg.content.map((user: User) => (
+                <li key={user.id} className="mt-2">
+                  <p><strong>ID:</strong> {user.id}</p>
+                  <p><strong>Name:</strong> {user.name}</p>
+                  <p><strong>Email:</strong> {user.email}</p>
+                  <p><strong>Role:</strong> {user.role}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No user data available.</p>
+          )
+        )}
+      </div>
+    );
+  };
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -218,24 +260,7 @@ const ChatboxPage: React.FC = () => {
 
         {/* Chat Container (Scrollable) */}
         <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 bg-gray-100 text-black">
-          {chatHistory.map((msg, index) => (
-            <div key={index} className={`p-3 mb-2 rounded-lg ${msg.type === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100 mr-auto'} max-w-3/4`}>
-              <strong>{msg.type === 'user' ? 'You:' : 'Bot:'}</strong>
-              {typeof msg.content === 'string' ? (
-                <p>{msg.content}</p>
-              ) : (
-                <ul>
-                  {msg.content.map((user: User) => (
-                    <li key={user.id}>
-                      <p><strong>ID:</strong> {user.id}</p>
-                      <p><strong>Name:</strong> {user.name}</p>
-                      <p><strong>Email:</strong> {user.email}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ))}
+          {chatHistory.map((msg, index) => renderMessage(msg))}
         </div>
 
         {/* Input Area (Fixed at bottom) */}
