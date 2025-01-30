@@ -4,7 +4,7 @@ import { fetchStudentsRegistered } from "@/utils/api";
 const RegisteredStudents: React.FC = () => {
   const [studentCount, setStudentCount] = useState<number>(0);
   const courseId = "ns_noc24_cs114"; 
-  const dept = "Cyber Security"
+  const dept = "Artificial Intelligence and Machine Learning"
 
   useEffect(() => {
     const getRegisteredStudents = async () => {
