@@ -2,6 +2,9 @@
 import React, { useState,useRef,useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { logout } from '../../utils/api';
+import Bargraph from '@/components/Bargraph';
+import RegisteredStudents from '@/components/RegisteredStudents';
+import ExamRegistered from '@/components/ExamRegisteredStudent';
 
 const Dashboard: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -173,46 +176,17 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col h-screen overflow-auto">
-        {/* Hamburger Menu for Mobile View */}
-        <div className="md:hidden flex justify-start mb-4">
-          <button onClick={toggleSidebar} className="focus:outline-none">
-            <div className="text-3xl p-1 border b-2 border-black px-3 rounded-xl text-black">
-              {/* Hamburger Menu Icon */}
-              {sidebarOpen ? (
-                <span>&#10005;</span> // Cross symbol (X) for closing
-              ) : (
-                <span>&#9776;</span> // Hamburger menu (☰) for opening
-              )}
-            </div>
-          </button>
+      <div className="w-full md:w-4/5 p-4 md:p-8" id="dashboard-container">
+        <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 p-4 rounded-md text-black">DASHBOARD</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Rating</div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32">File Upload (For automation-data)</div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-64">Pie Chart representation of course completed</div>
         </div>
-        <header className="bg-[#990011] text-white p-4">
-          <h1 className="text-lg font-semibold text-center">DashBoard</h1>
-        </header>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 mt-5 md:mt-12 mx-5">
-          <div className="bg-gray-500 p-4 rounded-md text-center h-32">
-            No of students registered for course
-          </div>
-          <div className="bg-gray-500 p-4 rounded-md text-center h-32">
-            No of students registered for exams
-          </div>
-          <div className="bg-gray-500 p-4 rounded-md text-center h-32">
-            Rating
-          </div>
-          <div className="bg-gray-500 p-4 rounded-md text-center h-32">
-            File Upload (For automation-data)
-          </div>
-          <div className="bg-gray-500 p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3">
-            Graph representation of weekly assignments completed by students
-          </div>
-          <div className="bg-gray-500 p-4 rounded-md text-center h-64">
-            Pie Chart representation of course completed
-          </div>
-        </div>
-        <div className="bg-gray-500 p-4 rounded-md text-center h-32 mx-5 mb-5">
-          Total Average of students completed their assignments
-        </div>
+        <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Total Average of students completed their assignments</div>
       </div>
     </div>
   );
