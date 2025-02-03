@@ -5,6 +5,7 @@ import { logout } from '../../utils/api';
 import Bargraph from '@/components/Bargraph';
 import RegisteredStudents from '@/components/RegisteredStudents';
 import FileUploadButton from "@/components/FileUpload";
+import { saveAssignment,saveStudents } from "../../utils/api";
 import ExamRegistered from '@/components/ExamRegisteredStudent';
 
 const Dashboard: React.FC = () => {
@@ -156,7 +157,8 @@ const Dashboard: React.FC = () => {
               className="hidden"
               onChange={handleFileChange}
             />
-            <FileUploadButton />
+            <FileUploadButton apiCall={saveStudents} buttonText="Upload Students"/>
+            <FileUploadButton apiCall={saveAssignment} buttonText="Upload Assignments"/>
           </>
           </nav>
 
