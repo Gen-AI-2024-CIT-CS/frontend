@@ -7,6 +7,7 @@ import RegisteredStudents from '@/components/RegisteredStudents';
 import FileUploadButton from "@/components/FileUpload";
 import { saveAssignment,saveStudents } from "../../utils/api";
 import ExamRegistered from '@/components/ExamRegisteredStudent';
+import GrafanaEmbed from '@/components/GrafanaEmbed';
 
 const Dashboard: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -73,10 +74,11 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row max-h-screen bg-gray-100">
+    <div className="bg-gray-100">
+    <div className="flex flex-col md:flex-row">
       {/* Sidebar */}
       <div
-        className={`h-screen w-3/5 md:w-1/6 bg-[#990011] text-white flex flex-col p-4 pt-0 justify-start transform transition-transform duration-300 ease-in-out ${
+        className={`w-3/5 md:w-1/6 bg-[#990011] text-white flex flex-col p-4 pt-0 justify-start transform transition-transform duration-300 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 fixed md:relative z-10`}
       >
@@ -91,7 +93,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Sidebar Content */}
-        <div className="flex flex-col justify-start h-full">
+        <div className="flex flex-col justify-start h-screen">
           <h2 className="text-xl font-bold mb-4 mt-2">Filters</h2> {/* Reduced top margin */}
           <div className="flex flex-col space-y-2">
             <div className=" p-2 rounded-md relative">
@@ -185,7 +187,12 @@ const Dashboard: React.FC = () => {
           <div className="bg-[#dedada] p-4 rounded-md text-center h-64">Pie Chart representation of course completed</div>
         </div>
         <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Total Average of students completed their assignments</div>
+        
       </div>
+    </div>
+    <div className="h-fit">
+      <GrafanaEmbed />
+    </div>
     </div>
   );
 };
