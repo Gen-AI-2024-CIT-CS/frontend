@@ -46,5 +46,11 @@ export const saveStudents = async (formData: FormData) => {
     body: formData,
   });
 }
+export const saveCoursesEnrolled = async (formData: FormData) => {
+  return fetch("http://localhost:3001/api/uploadCoursesEnrolled", {
+    method: "POST",
+    body: formData,
+  });
+}
 
 export default api;

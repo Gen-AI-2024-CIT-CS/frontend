@@ -5,8 +5,9 @@ import { logout } from '../../utils/api';
 import Bargraph from '@/components/Bargraph';
 import RegisteredStudents from '@/components/RegisteredStudents';
 import FileUploadButton from "@/components/FileUpload";
-import { saveAssignment,saveStudents } from "../../utils/api";
+import { saveAssignment,saveStudents,saveCoursesEnrolled } from "../../utils/api";
 import ExamRegistered from '@/components/ExamRegisteredStudent';
+
 
 const Dashboard: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -109,6 +110,7 @@ const Dashboard: React.FC = () => {
               >
                 <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg">
                   {[
+                    "Whole College",
                     "Cyber Security",
                     "CSE",
                     "ECE",
@@ -157,6 +159,7 @@ const Dashboard: React.FC = () => {
               className="hidden"
               onChange={handleFileChange}
             />
+            <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered"/>
             <FileUploadButton apiCall={saveStudents} buttonText="Upload Students"/>
             <FileUploadButton apiCall={saveAssignment} buttonText="Upload Assignments"/>
           </>
