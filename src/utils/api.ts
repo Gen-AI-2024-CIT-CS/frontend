@@ -35,12 +35,15 @@ export const chat = (message: string) => api.post('/chat', { message });
 export const fetchAssignments = (courseID : string,dept:string) => api.get(`/assignments?courseID=${courseID}&dept=${dept}`);
 export const fetchStudentsRegistered = (courseID : string,dept:string) => api.get(`/students?courseID=${courseID}&dept=${dept}`);
 export const saveAssignment = async (formData: FormData) => {
+
   return fetch("http://localhost:3001/api/uploadAssignments", {
     method: "POST",
     body: formData,
+    credentials: "include",
   });
 };
 export const saveStudents = async (formData: FormData) => {
+
   return fetch("http://localhost:3001/api/uploadStudents", {
     method: "POST",
     body: formData,
