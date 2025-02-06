@@ -32,6 +32,7 @@ export const login = async (email: string, password: string) => {
   }
 };
 export const chat = (message: string) => api.post('/chat', { message });
+
 export const fetchAssignments = (dept:string, courseID: string) => api.get(`/assignments?dept=${dept}&courseID=${courseID}`);
 export const fetchStudentsRegistered = (dept:string) => api.get(`/students?dept=${dept}`);
 export const saveAssignment = async (formData: FormData,courseID: string) => {
