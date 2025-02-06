@@ -5,16 +5,17 @@ import { logout } from '../../utils/api';
 import Bargraph from '@/components/Bargraph';
 import RegisteredStudents from '@/components/RegisteredStudents';
 import FileUploadButton from "@/components/FileUpload";
-import { saveAssignment,saveStudents } from "../../utils/api";
+import { saveAssignment,saveStudents,saveCoursesEnrolled } from "../../utils/api";
 import ExamRegistered from '@/components/ExamRegisteredStudent';
 import GrafanaEmbed from '@/components/GrafanaEmbed';
+
 
 const Dashboard: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] = useState(
-    "Select Department"
-  );
+  const [selectedDepartment, setSelectedDepartment] = useState({
+    short:"Select Department",full:""
+  });
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showMessage, setShowMessage] = useState(false);
   const router = useRouter();
@@ -68,7 +69,7 @@ const Dashboard: React.FC = () => {
   const toggleDropdown = () => setIsOpen(!isOpen);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
-  const handleSelectDepartment = (department: string) => {
+  const handleSelectDepartment = (department: { short: string; full: string }) => {
     setSelectedDepartment(department);
     setIsOpen(false);
   };
@@ -101,7 +102,7 @@ const Dashboard: React.FC = () => {
                 className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95"
                 onClick={toggleDropdown}
               >
-                {selectedDepartment}
+                {selectedDepartment.short}
                 <span>{isOpen ? "▲" : "▼"}</span>
               </button>
               <div
@@ -110,23 +111,24 @@ const Dashboard: React.FC = () => {
                 }`}
               >
                 <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg">
-                  {[
-                    "Cyber Security",
-                    "CSE",
-                    "ECE",
-                    "EEE",
-                    "AIML",
-                    "AIDS",
-                  ].map((dept) => (
-                    <li key={dept}>
+                    {[
+                    { short: "All Departments", full: "" },
+                    { short: "Cyber Security", full: "Cyber Security" },
+                    { short: "CSE", full: "Computer Science and Engineering" },
+                    { short: "ECE", full: "Electronics and Communication Engineering" },
+                    { short: "EEE", full: "Electrical and Electronics Engineering" },
+                    { short: "AIML", full: "Artificial Intelligence and Machine Learning" },
+                    { short: "AIDS", full: "Artificial Intelligence and Data Science" },
+                    ].map((dept) => (
+                    <li key={dept.short}>
                       <button
-                        className="w-full text-left np hover:bg-[#990011] p-2 rounded-md"
-                        onClick={() => handleSelectDepartment(dept)}
+                      className="w-full text-left np hover:bg-[#990011] p-2 rounded-md"
+                      onClick={() => handleSelectDepartment(dept)}
                       >
-                        {dept}
+                      {dept.short}
                       </button>
                     </li>
-                  ))}
+                    ))}
                 </ul>
               </div>
             </div>
@@ -159,8 +161,9 @@ const Dashboard: React.FC = () => {
               className="hidden"
               onChange={handleFileChange}
             />
-            <FileUploadButton apiCall={saveStudents} buttonText="Upload Students"/>
-            <FileUploadButton apiCall={saveAssignment} buttonText="Upload Assignments"/>
+            <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered" courseID=""/>
+            <FileUploadButton apiCall={saveStudents} buttonText="Upload Students" courseID=""/>
+            <FileUploadButton apiCall={saveAssignment} buttonText="Upload Assignments" courseID="ns_noc24_cs94"/>
           </>
           </nav>
 
@@ -179,11 +182,11 @@ const Dashboard: React.FC = () => {
       <div className="w-full md:w-4/5 p-4 md:p-8" id="dashboard-container">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 p-4 rounded-md text-black">DASHBOARD</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents dept={selectedDepartment.full} courseID=""/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered dept={selectedDepartment.full} courseID=""/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Rating</div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32">File Upload (For automation-data)</div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId="ns_noc24_cs94"/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-64">Pie Chart representation of course completed</div>
         </div>
         <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Total Average of students completed their assignments</div>

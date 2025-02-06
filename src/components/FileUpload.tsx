@@ -1,11 +1,12 @@
 import { useRef, useState } from "react";
 
 interface FileUploadButtonProps {
-  apiCall: (formData: FormData) => Promise<Response>;
+  apiCall: (formData: FormData,courseID:string) => Promise<Response>;
   buttonText: string;
+  courseID: string;
 }
 
-export default function FileUploadButton({ apiCall,buttonText }: FileUploadButtonProps) {
+export default function FileUploadButton({ apiCall,buttonText,courseID }: FileUploadButtonProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
 
@@ -21,7 +22,7 @@ export default function FileUploadButton({ apiCall,buttonText }: FileUploadButto
       formData.append("file", file);
 
       try {
-        const response = await apiCall(formData);
+        const response = await apiCall(formData, courseID);
 
         if (response.status === 200) {
           setUploadStatus("File uploaded successfully!");
