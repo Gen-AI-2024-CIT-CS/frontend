@@ -110,7 +110,7 @@ const Dashboard: React.FC = () => {
               >
                 <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg">
                     {[
-                    { short: "All Departments", full: "All Departments" },
+                    { short: "All Departments", full: "" },
                     { short: "Cyber Security", full: "Cyber Security" },
                     { short: "CSE", full: "Computer Science and Engineering" },
                     { short: "ECE", full: "Electronics and Communication Engineering" },
@@ -159,9 +159,9 @@ const Dashboard: React.FC = () => {
               className="hidden"
               onChange={handleFileChange}
             />
-            <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered"/>
-            <FileUploadButton apiCall={saveStudents} buttonText="Upload Students"/>
-            <FileUploadButton apiCall={saveAssignment} buttonText="Upload Assignments"/>
+            <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered" courseID=""/>
+            <FileUploadButton apiCall={saveStudents} buttonText="Upload Students" courseID=""/>
+            <FileUploadButton apiCall={saveAssignment} buttonText="Upload Assignments" courseID="ns_noc24_cs94"/>
           </>
           </nav>
 
@@ -184,7 +184,7 @@ const Dashboard: React.FC = () => {
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered dept={selectedDepartment.full} courseID=""/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Rating</div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32">File Upload (For automation-data)</div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId=""/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId="ns_noc24_cs94"/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-64">Pie Chart representation of course completed</div>
         </div>
         <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Total Average of students completed their assignments</div>

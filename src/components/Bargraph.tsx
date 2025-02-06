@@ -54,7 +54,7 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
       try {
         const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
         const filteredAssignments = assignments.filter(
-          (assignment: any) => assignment.dept === props.dept
+          (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId
         );
         console.log(filteredAssignments);
         // Calculate completed and not completed for each week
