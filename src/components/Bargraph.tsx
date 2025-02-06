@@ -42,16 +42,21 @@ const options: ChartOptions<'bar'> = {
   }
 };
 
-const BarGraph: React.FC = () => {
+interface AssignmentsGraph{
+  dept:string,
+  courseId:string
+}
+const BarGraph: React.FC<AssignmentsGraph> = (props) => {
   const [chartData, setChartData] = useState<any>(null);
-  const courseId = "ns_noc24_cs114"; 
-  const dept = "Artificial Intelligence and Machine Learning";
 
   useEffect(() => {
     const getAssignments = async () => {
       try {
-        const { data: assignments } = await fetchAssignments(courseId,dept);
-        console.log(assignments)
+        const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
+        const filteredAssignments = assignments.filter(
+          (assignment: any) => assignment.dept === props.dept
+        );
+        console.log(filteredAssignments);
         // Calculate completed and not completed for each week
         const completed: number[] = [];
         const notCompleted: number[] = [];
@@ -59,11 +64,11 @@ const BarGraph: React.FC = () => {
         for (let i = 1; i <= 12; i++) {
           const weekLabel = `assignment${i}`;
           
-          const completedCount = assignments.filter(
+          const completedCount = filteredAssignments.filter(
             (assignment: any) => parseFloat(assignment[weekLabel]) > 0
           ).length;
           
-          const notCompletedCount = assignments.length - completedCount;
+          const notCompletedCount = filteredAssignments.length - completedCount;
 
           completed.push(completedCount);
           notCompleted.push(notCompletedCount);
@@ -91,7 +96,7 @@ const BarGraph: React.FC = () => {
     };
 
     getAssignments();
-  }, []);
+  }, [props.dept,props.courseId]);
 
   return (
     <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>

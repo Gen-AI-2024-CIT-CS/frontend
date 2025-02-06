@@ -1,28 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { fetchStudentsRegistered } from "@/utils/api";
+import { register } from "module";
 
-const RegisteredStudents: React.FC = () => {
+interface ExamRegisteredProps {
+  courseID: string;
+  dept: string;
+}
+
+const RegisteredStudents: React.FC<ExamRegisteredProps> = (props) => {
   const [studentCount, setStudentCount] = useState<number>(0);
-  const courseId = "ns_noc24_cs114"; 
-  const dept = "Cyber Security";
 
   useEffect(() => {
     const getRegisteredStudents = async () => {
       try {
-        const { data: registeredStudents } = await fetchStudentsRegistered(courseId,dept);
-        console.log(registeredStudents)
-        const filteredStudents = registeredStudents.filter(
-          (student: any) => student.course_id === courseId
-        );
+        if(props.dept === "All Departments"){
+          props.dept = "";
+        }
+        const { data: registeredStudents } = await fetchStudentsRegistered(props.dept);
+        if(props.courseID){
+          const filteredStudents = registeredStudents.filter(
+            (student: any) => student.course_id === props.courseID
+          );
+          setStudentCount(filteredStudents.length);
+        }else{
+          setStudentCount(registeredStudents.length);
+        }
 
-        setStudentCount(filteredStudents.length);
       } catch (error) {
         console.error("Failed to fetch students", error);
       }
     };
 
     getRegisteredStudents();
-  }, []);
+  }, [props.dept,props.courseID]);
 
   return (
     <div>
