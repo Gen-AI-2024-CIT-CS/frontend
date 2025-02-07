@@ -8,6 +8,7 @@ import FileUploadButton from "@/components/FileUpload";
 import { saveAssignment,saveStudents,saveCoursesEnrolled } from "../../utils/api";
 import ExamRegistered from '@/components/ExamRegisteredStudent';
 import GrafanaEmbed from '@/components/GrafanaEmbed';
+import AverageAssignment from "@/components/AverageAssignment";
 
 
 const Dashboard: React.FC = () => {
@@ -184,7 +185,7 @@ const Dashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents dept={selectedDepartment.full} courseID=""/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered dept={selectedDepartment.full} courseID=""/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Rating</div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><AverageAssignment dept={selectedDepartment.full} courseId="ns_noc24_cs94"/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32">File Upload (For automation-data)</div>
           <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId="ns_noc24_cs94"/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-64">Pie Chart representation of course completed</div>
