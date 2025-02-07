@@ -197,6 +197,12 @@ const ChatboxPage: React.FC = () => {
               </div>
             </div>
           </div>
+          <button 
+            onClick={() => router.push('/mentor-mentee')}
+            className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
+            >
+            Mentor-Mentee List
+          </button>
           {/* Spacer to push content to the bottom */}
           <div className="flex flex-col items-center justify-center h-full w-full">
           {/* Spacer to push content to the bottom */}
