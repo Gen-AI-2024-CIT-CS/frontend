@@ -42,7 +42,7 @@ const GrafanaEmbed = () => {
   return (
     <div className='flex justify-center'>
       <iframe 
-        src="http://localhost:3000/d-solo/aec24rk3p05c0c/test-dashboard?orgId=1&from=1738667043472&to=1738688643472&timezone=browser&panelId=1&__feature.dashboardSceneSolo" 
+        src="https://baeb-182-19-35-177.ngrok-free.app/d-solo/aec24rk3p05c0c/test-dashboard?orgId=1&from=1738667043472&to=1738688643472&timezone=browser&panelId=1&__feature.dashboardSceneSolo" 
         style={iframeStyle}
         frameBorder="0"
       />
