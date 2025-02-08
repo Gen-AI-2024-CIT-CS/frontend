@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
@@ -51,6 +49,18 @@ const MentorBarGraph: React.FC<MentorBarGraphProps> = ({ mentorName, mentees, as
   const [selectedMenteeIndex, setSelectedMenteeIndex] = useState<number | null>(null);
   const [studentStats, setStudentStats] = useState<{ completed: number; notCompleted: number } | null>(null);
 
+  // Department mapping function
+  const getDepartmentFromRollNo = (rollNo: string): string => {
+    const deptCode = rollNo.match(/\d{2}([A-Z]{2})/)?.[1] || "";
+    const deptMap: { [key: string]: string } = {
+      'AM': 'AIML',
+      'CS': 'CSE',
+      'CZ': 'CSE (CS)',
+      // Add more department mappings as needed
+    };
+    return deptMap[deptCode] || deptCode;
+  };
+
   useEffect(() => {
     const processAssignments = () => {
       const menteeEmails = new Set(mentees.map((m) => m.email));
@@ -91,7 +101,30 @@ const MentorBarGraph: React.FC<MentorBarGraphProps> = ({ mentorName, mentees, as
     setStudentStats({ completed: completedCount, notCompleted: 12 - completedCount });
     setSelectedMenteeIndex(index);
   };
-  
+
+  // Helper function to extract numeric part and year from roll number
+  const getRollNumberValue = (roll: string) => {
+    // Extract year and sequence number
+    const match = roll.match(/(\d{2})(?:[A-Z]{2})(\d+)/);
+    if (!match) return { year: 0, sequence: 0 };
+    
+    const year = parseInt(match[1]);
+    const sequence = parseInt(match[2]);
+    return { year, sequence };
+  };
+
+  // Sort mentees based on year first, then sequence number
+  const sortedMentees = [...mentees].sort((a, b) => {
+    const aValues = getRollNumberValue(a.roll_no);
+    const bValues = getRollNumberValue(b.roll_no);
+    
+    // Sort by year first
+    if (aValues.year !== bValues.year) {
+      return aValues.year - bValues.year;
+    }
+    // Then by sequence number
+    return aValues.sequence - bValues.sequence;
+  });
 
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg border border-gray-200">
@@ -100,7 +133,7 @@ const MentorBarGraph: React.FC<MentorBarGraphProps> = ({ mentorName, mentees, as
 
       <h4 className="text-md font-semibold text-gray-700 mt-4 mb-2">Students:</h4>
       <ul className="space-y-3">
-        {mentees.map((mentee, index) => (
+        {sortedMentees.map((mentee, index) => (
           <React.Fragment key={mentee.email}>
             <li
               className={`p-3 border rounded-md flex justify-between items-center hover:bg-gray-100 cursor-pointer transition ${
@@ -110,12 +143,13 @@ const MentorBarGraph: React.FC<MentorBarGraphProps> = ({ mentorName, mentees, as
             >
               <div>
                 <p className="font-medium text-gray-800">{mentee.name}</p>
-                <p className="text-sm text-gray-600">Roll No: {mentee.roll_no} | {mentee.dept}</p>
+                <p className="text-sm text-gray-600">
+                  Roll No: {mentee.roll_no} | {getDepartmentFromRollNo(mentee.roll_no)}
+                </p>
               </div>
               <span className="text-blue-500 font-semibold text-sm">View Progress</span>
             </li>
 
-            {/* Render Progress Below the Selected Mentee */}
             {selectedMenteeIndex === index && studentStats && (
               <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <h4 className="text-lg font-bold text-blue-800">{selectedMentee?.name}'s Progress</h4>
@@ -132,8 +166,8 @@ const MentorBarGraph: React.FC<MentorBarGraphProps> = ({ mentorName, mentees, as
                   
                   <button
                     onClick={() => {
-                      const nextIndex = (selectedMenteeIndex + 1) % mentees.length;
-                      handleMenteeClick(mentees[nextIndex], nextIndex);
+                      const nextIndex = (selectedMenteeIndex + 1) % sortedMentees.length;
+                      handleMenteeClick(sortedMentees[nextIndex], nextIndex);
                     }}
                     className="px-4 py-2 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600 transition"
                   >
