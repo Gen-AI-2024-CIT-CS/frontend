@@ -20,7 +20,6 @@ export default function AverageAssignment(props: AverageAssignmentProps) {
                 .filter(value => !isNaN(value));
             const validAssignmentValues = assignmentValues.filter(value => value > 0);
             if (validAssignmentValues.length === 0) return sum;
-            console.log(validAssignmentValues)
             const assignmentAverage = validAssignmentValues.reduce((a, b) => a + b, 0) / validAssignmentValues.length;
             return sum + assignmentAverage;
         }, 0);
@@ -46,7 +45,9 @@ export default function AverageAssignment(props: AverageAssignmentProps) {
 
     return (
         <div>
-            <h3>Average Assignment Score: {average.toFixed(2)}</h3>
+            <h3>Average Assignment Score: 
+                <p className="text-6xl m-2">{average.toFixed(2)}</p>
+            </h3>
         </div>
     );
 }
