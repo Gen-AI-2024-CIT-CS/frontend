@@ -9,52 +9,83 @@ import {
   Title, 
   Tooltip, 
   Legend,   
-  ChartOptions
+  ChartOptions,
+  TooltipItem
 } from 'chart.js';
 import { fetchAssignments } from '../utils/api';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const options: ChartOptions<'bar'> = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: 'top' as const,
-    },
-    title: {
-      display: true,
-      text: 'Weekly Assignment Completion',
-    },
-  },
-  scales: {
-    x: {
-      title: {
-        display: true,
-        text: 'Weeks'
-      }
-    },
-    y: {
-      title: {
-        display: true,
-        text: 'Number of Students'
-      }
-    }
-  }
-};
-
-interface AssignmentsGraph{
-  dept:string,
-  courseId:string
+interface AssignmentsGraph {
+  dept: string;
+  courseId: string;
 }
+
+interface AssignmentData {
+  [key: string]: string | null;
+  course_id: string;
+  courseid: string;
+  created_at: string;
+  dept: string;
+  email: string;
+  name: string;
+  roll_no: string;
+}
+
 const BarGraph: React.FC<AssignmentsGraph> = (props) => {
   const [chartData, setChartData] = useState<any>(null);
+  const [assignments, setAssignments] = useState<AssignmentData[]>([]);
+
+  const options: ChartOptions<'bar'> = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top' as const,
+      },
+      title: {
+        display: true,
+        text: 'Weekly Assignment Completion',
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context: TooltipItem<'bar'>) {
+            if (context.dataset.label === 'Not Completed') {
+              const weekIndex = context.dataIndex;
+              const weekLabel = `assignment${weekIndex+1}`; // Fixed string interpolation
+              const notCompletedStudents = assignments
+                .filter((assignment: AssignmentData) => assignment[weekLabel as keyof AssignmentData] === "0.00")
+                .map((assignment: AssignmentData) => assignment.name);
+              return `Not Completed: ${notCompletedStudents.join(', ')}`;
+            } else {
+              return `Completed: ${context.raw}`;
+            }
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Weeks'
+        }
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Number of Students'
+        }
+      }
+    }
+  };
 
   useEffect(() => {
     const getAssignments = async () => {
       try {
         const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
+        setAssignments(assignments);
         const filteredAssignments = assignments.filter(
-          (assignment: any) => assignment.dept === props.dept
+          (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId
         );
         console.log(filteredAssignments);
         // Calculate completed and not completed for each week

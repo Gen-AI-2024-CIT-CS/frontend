@@ -32,21 +32,26 @@ export const login = async (email: string, password: string) => {
   }
 };
 export const chat = (message: string) => api.post('/chat', { message });
+
 export const fetchAssignments = (dept:string, courseID: string) => api.get(`/assignments?dept=${dept}&courseID=${courseID}`);
 export const fetchStudentsRegistered = (dept:string) => api.get(`/students?dept=${dept}`);
-export const saveAssignment = async (formData: FormData) => {
+export const saveAssignment = async (formData: FormData,courseID: string) => {
   return fetch("http://localhost:3001/api/uploadAssignments", {
     method: "POST",
     body: formData,
+    headers: {
+      'courseID': courseID
+    },
+    credentials:'include'
   });
 };
-export const saveStudents = async (formData: FormData) => {
+export const saveStudents = async (formData: FormData,courseID:string) => {
   return fetch("http://localhost:3001/api/uploadStudents", {
     method: "POST",
     body: formData,
   });
 }
-export const saveCoursesEnrolled = async (formData: FormData) => {
+export const saveCoursesEnrolled = async (formData: FormData,courseID:string) => {
   return fetch("http://localhost:3001/api/uploadCoursesEnrolled", {
     method: "POST",
     body: formData,

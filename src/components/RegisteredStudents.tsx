@@ -13,9 +13,6 @@ const RegisteredStudents: React.FC<ExamRegisteredProps> = (props) => {
   useEffect(() => {
     const getRegisteredStudents = async () => {
       try {
-        if(props.dept === "All Departments"){
-          props.dept = "";
-        }
         const { data: registeredStudents } = await fetchStudentsRegistered(props.dept);
         if(props.courseID){
           const filteredStudents = registeredStudents.filter(
