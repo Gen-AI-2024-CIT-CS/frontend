@@ -1,47 +1,70 @@
 "use client";
-import React, { useState,useRef,useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { logout } from '../../utils/api';
 import Bargraph from '@/components/Bargraph';
 import RegisteredStudents from '@/components/RegisteredStudents';
 import FileUploadButton from "@/components/FileUpload";
-import { saveAssignment,saveStudents,saveCoursesEnrolled } from "../../utils/api";
+import { saveAssignment, saveStudents, saveCoursesEnrolled } from "../../utils/api";
 import ExamRegistered from '@/components/ExamRegisteredStudent';
+import SaveAssignments from "@/components/SaveAssignments";
 
+const departments = [
+  { short: "All Departments", full: "All Departments" },
+  { short: "CS", full: "Cyber Security" },
+  { short: "CSE", full: "Computer Science and Engineering" },
+  { short: "AIML", full: "Artificial Intelligence and Machine Learning" },
+  { short: "ECE", full: "Electronics and Communication Engineering" },
+  { short: "BME", full: "Biomedical Engineering" },
+  { short: "EEE", full: "Electrical and Electronics Engineering" },
+  { short: "MCT", full: "Mechatronics" },
+  { short: "MECH", full: "Mechanical Engineering" },
+  { short: "CE", full: "Civil Engineering" },
+  { short: "IT", full: "Information Technology" },
+  { short: "AIDS", full: "Artificial Intelligence and Data Science" },
+  { short: "CSBS", full: "Computer Science and Business Systems" },
+];
+
+const courses = [
+  { short: "DSA", full: "Data Structures and Algorithms" },
+  { short: "DBMS", full: "Database Management Systems" },
+  { short: "OS", full: "Operating System Fundamentals" },
+  { short: "CN", full: "Computer Networks" },
+  { short: "AI", full: "Artificial Intelligence" },
+  { short: "ML", full: "Machine Learning" },
+  { short: "CC", full: "Cloud Computing" },
+  { short: "IOT", full: "Internet of Things" },
+  { short: "BC", full: "Blockchain Technology" },
+  { short: "SE", full: "Software Engineering" }
+];
 
 const Dashboard: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedDepartment, setSelectedDepartment] = useState({
-    short:"Select Department",full:""
-  });
+  const [selectedDepartment, setSelectedDepartment] = useState({ short: "Select Department", full: "" });
+  const [selectedCourse, setSelectedCourse] = useState({ short: "Select Course", full: "" });
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showMessage, setShowMessage] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
 
   useEffect(() => {
-    // Fetch user role from localStorage or your state management solution
-    const role = localStorage.getItem('user_role'); // Or however you store the user role
+    const role = localStorage.getItem('user_role');
     setUserRole(role);
   }, []);
 
   const handleLogout = async () => {
     try {
-      // Call the logout API
       await logout();
-      
-      // Perform any additional actions such as clearing cookies, localStorage, etc.
-      // Redirect to the login page after logout
       router.push('/login');
     } catch (error) {
       console.error('Logout failed:', error);
     }
-  };  
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = () => {
-    // Trigger the file input dialog
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -51,7 +74,6 @@ const Dashboard: React.FC = () => {
     const file = event.target.files?.[0];
     if (file) {
       console.log('Selected file:', file);
-      // You can now upload the file to the server or process it
     }
   };
 
@@ -61,118 +83,132 @@ const Dashboard: React.FC = () => {
       router.refresh();
     } else {
       setShowMessage(true);
-      setTimeout(() => setShowMessage(false), 3000); // Hide message after 3 seconds
+      setTimeout(() => setShowMessage(false), 3000);
     }
   };
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const toggleDropdown = (dropdown: string) => {
+    setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+  };
 
   const handleSelectDepartment = (department: { short: string; full: string }) => {
     setSelectedDepartment(department);
-    setIsOpen(false);
+    setOpenDropdown(null);
   };
+
+  const handleSelectCourse = (course: { short: string; full: string }) => {
+    setSelectedCourse(course);
+    setOpenDropdown(null);
+  };
+
+  const filteredDepartments = departments.filter(dept =>
+    dept.short.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredCourses = courses.filter(course =>
+    course.short.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="flex flex-col md:flex-row max-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div
-        className={`h-screen w-3/5 md:w-1/6 bg-[#990011] text-white flex flex-col p-4 pt-0 justify-start transform transition-transform duration-300 ease-in-out ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } md:translate-x-0 fixed md:relative z-10`}
-      >
-        {/* Close Button for Mobile View */}
+      <div className={`h-screen w-3/5 md:w-1/6 bg-[#990011] text-white flex flex-col p-4 pt-0 justify-start transform transition-transform duration-300 ease-in-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative z-10`}>
         <div className="md:hidden flex justify-end mb-4">
-          <button onClick={toggleSidebar} className="focus:outline-none">
-            <div className="text-3xl text-white">
-              {/* Use the less-than symbol to indicate closing */}
-              &lt;
-            </div>
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="focus:outline-none">
+            <div className="text-3xl text-white">&lt;</div>
           </button>
         </div>
 
-        {/* Sidebar Content */}
         <div className="flex flex-col justify-start h-full">
-          <h2 className="text-xl font-bold mb-4 mt-2">Filters</h2> {/* Reduced top margin */}
+          <h2 className="text-xl font-bold mb-4 mt-2">Filters</h2>
           <div className="flex flex-col space-y-2">
-            <div className=" p-2 rounded-md relative">
-              <button
-                className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95"
-                onClick={toggleDropdown}
-              >
+            {/* Department Dropdown */}
+            <div className="relative">
+              <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95" onClick={() => toggleDropdown('department')}>
                 {selectedDepartment.short}
-                <span>{isOpen ? "▲" : "▼"}</span>
+                <span>{openDropdown === 'department' ? "▲" : "▼"}</span>
               </button>
-              <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  isOpen ? "max-h-full" : "max-h-0"
-                }`}
-              >
-                <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg">
-                    {[
-                    { short: "All Departments", full: "All Departments" },
-                    { short: "Cyber Security", full: "Cyber Security" },
-                    { short: "CSE", full: "Computer Science and Engineering" },
-                    { short: "ECE", full: "Electronics and Communication Engineering" },
-                    { short: "EEE", full: "Electrical and Electronics Engineering" },
-                    { short: "AIML", full: "Artificial Intelligence and Machine Learning" },
-                    { short: "AIDS", full: "Artificial Intelligence and Data Science" },
-                    ].map((dept) => (
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openDropdown === 'department' ? "max-h-60" : "max-h-0"}`}>
+                <input
+                  type="text"
+                  placeholder="Search Department..."
+                  className="w-full p-2 rounded-md mb-2"
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const foundDept = filteredDepartments[0];
+                      if (foundDept) handleSelectDepartment(foundDept);
+                    }
+                  }}
+                />
+                <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg max-h-40 overflow-y-auto">
+                  {filteredDepartments.slice(0, 5).map((dept) => (
                     <li key={dept.short}>
-                      <button
-                      className="w-full text-left np hover:bg-[#990011] p-2 rounded-md"
-                      onClick={() => handleSelectDepartment(dept)}
-                      >
-                      {dept.short}
+                      <button className="w-full text-left hover:bg-[#990011] p-2 rounded-md" onClick={() => handleSelectDepartment(dept)}>
+                        {dept.short}
                       </button>
                     </li>
-                    ))}
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Course Dropdown */}
+            <div className="relative">
+              <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95" onClick={() => toggleDropdown('course')}>
+                {selectedCourse.short}
+                <span>{openDropdown === 'course' ? "▲" : "▼"}</span>
+              </button>
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openDropdown === 'course' ? "max-h-60" : "max-h-0"}`}>
+                <input
+                  type="text"
+                  placeholder="Search Course..."
+                  className="w-full p-2 rounded-md mb-2"
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const foundCourse = filteredCourses[0];
+                      if (foundCourse) handleSelectCourse(foundCourse);
+                    }
+                  }}
+                />
+                <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg max-h-40 overflow-y-auto">
+                  {filteredCourses.slice(0, 5).map((course) => (
+                    <li key={course.short}>
+                      <button className="w-full text-left hover:bg-[#990011] p-2 rounded-md" onClick={() => handleSelectCourse(course)}>
+                        {course.short}
+                      </button>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
           </div>
-          {/* Spacer to push content to the bottom */}
-          <div className="flex flex-col items-center justify-center h-full w-full">
-          {/* Spacer to push content to the bottom */}
+
           <div className="flex-grow"></div>
 
-          {/* Links moved to the bottom */}
-            {showMessage && (
-              <div className="fixed inset-0 flex items-center justify-center z-50">
-                <div className="bg-red-500 text-white p-4 rounded-md shadow-lg">
-                  Could not access ChatBot. Please contact admin.
-                </div>
+          {showMessage && (
+            <div className="fixed inset-0 flex items-center justify-center z-50">
+              <div className="bg-red-500 text-white p-4 rounded-md shadow-lg">
+                Could not access ChatBot. Please contact admin.
               </div>
-            )}
+            </div>
+          )}
           <nav className="mt-6 space-y-2 mb-4 w-full max-w-md">
-            <button
-              onClick={handleChatboxAccess}
-              className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95"
-            >
+            <button onClick={handleChatboxAccess} className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95">
               ChatBot
             </button>
             <>
-            <input
-              title="SendFile"
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered"/>
-            <FileUploadButton apiCall={saveStudents} buttonText="Upload Students"/>
-            <FileUploadButton apiCall={saveAssignment} buttonText="Upload Assignments"/>
-          </>
+              <input title="SendFile" type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+              <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered" />
+              <FileUploadButton apiCall={saveStudents} buttonText="Upload Students" />
+              <SaveAssignments apiCall={saveAssignment} />
+            </>
           </nav>
 
-          {/* File Upload button at the very bottom */}
-          <button
-            className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4 w-full max-w-md transition transform duration-200 hover:scale-95"
-            onClick={handleLogout}
-          >
+          <button className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4 w-full max-w-md transition transform duration-200 hover:scale-95" onClick={handleLogout}>
             Logout
           </button>
-        </div>
         </div>
       </div>
 
@@ -180,11 +216,11 @@ const Dashboard: React.FC = () => {
       <div className="w-full md:w-4/5 p-4 md:p-8" id="dashboard-container">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 p-4 rounded-md text-black">DASHBOARD</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents dept={selectedDepartment.full} courseID=""/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered dept={selectedDepartment.full} courseID=""/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents dept={selectedDepartment.full} courseID="" /></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered dept={selectedDepartment.full} courseID="" /></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Rating</div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32">File Upload (For automation-data)</div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId=""/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId="" /></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-64">Pie Chart representation of course completed</div>
         </div>
         <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Total Average of students completed their assignments</div>
