@@ -98,7 +98,7 @@ const Dashboard: React.FC = () => {
         <div className="flex flex-col justify-start h-screen">
           <h2 className="text-xl font-bold mb-4 mt-2">Filters</h2> {/* Reduced top margin */}
           <div className="flex flex-col space-y-2">
-            <div className=" p-2 rounded-md relative">
+            <div className="p-2 rounded-md relative">
               <button
                 className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95"
                 onClick={toggleDropdown}
@@ -132,14 +132,14 @@ const Dashboard: React.FC = () => {
                     ))}
                 </ul>
               </div>
+              <button 
+                onClick={() => router.push('/dashboard/mentor-mentee')}
+                className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
+                >
+                Mentor-Mentee List
+              </button>
             </div>
           </div>
-          <button 
-            onClick={() => router.push('/mentor-mentee')}
-            className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
-            >
-            Mentor-Mentee List
-          </button>
           {/* Spacer to push content to the bottom */}
           <div className="flex flex-col items-center justify-center h-full w-full">
           {/* Spacer to push content to the bottom */}
