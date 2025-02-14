@@ -40,6 +40,14 @@ export async function middleware(req: NextRequest) {
       }
     }
 
+    // Mentor access: Both admin and mentor can access
+    if (path.startsWith('/dashboard/mentor')) {
+      if (payload.role !== 'admin' && payload.role !== 'mentor') {
+        console.log('Unauthorized access attempt to /dashboard/mentor. Redirecting to login');
+        return NextResponse.redirect(loginUrl);
+      }
+    }
+
     // Token is valid, proceed with the request
     return NextResponse.next();
   } catch (err) {
