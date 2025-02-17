@@ -200,9 +200,6 @@ const Dashboard: React.FC = () => {
         
       </div>
     </div>
-    <div className="h-fit">
-      <GrafanaEmbed />
-    </div>
     </div>
   );
 };
