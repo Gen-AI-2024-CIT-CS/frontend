@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import MentorBarGraph from "../components/MentorBarGraph"; // Updated import
-import { useRouter } from 'next/navigation';
+import MentorBarGraph from "../components/MentorBarGraph";
 
 interface Mentee {
   name: string;
@@ -18,7 +17,7 @@ interface Assignment {
   due_date: string;
   course_id: string;
   email: string;
-  [key: string]: string; // Dynamic keys for weekly assignments
+  [key: string]: string;
 }
 
 interface GroupedMentors {
@@ -29,23 +28,36 @@ interface GroupedMentors {
 }
 
 const MenteeList: React.FC = () => {
- 
-  const router = useRouter();
-
   const [mentees, setMentees] = useState<Mentee[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  
 
-  useEffect(() => {3
-    const fetchMenteesAndAssignments = async () => {
+  useEffect(() => {
+    const fetchData = async () => {
       try {
-        const menteeResponse = await fetch("http://localhost:3001/api/mentormentee", { method: "GET", credentials: "include" });
-        if (!menteeResponse.ok) throw new Error("Failed to fetch mentees");
-        setMentees(await menteeResponse.json());
+        const [menteeResponse, assignmentResponse] = await Promise.all([
+          fetch("http://localhost:3001/api/mentormentee", { 
+            method: "GET", 
+            credentials: "include" 
+          }),
+          fetch("http://localhost:3001/api/menteeAssignment", { 
+            method: "GET", 
+            credentials: "include" 
+          })
+        ]);
 
-        const assignmentResponse = await fetch("http://localhost:3001/api/menteeAssignment", { method: "GET", credentials: "include" });
-        if (!assignmentResponse.ok) throw new Error("Failed to fetch assignments");
-        setAssignments(await assignmentResponse.json());
+        if (!menteeResponse.ok || !assignmentResponse.ok) {
+          throw new Error("Failed to fetch data");
+        }
+
+        const [menteeData, assignmentData] = await Promise.all([
+          menteeResponse.json(),
+          assignmentResponse.json()
+        ]);
+
+        setMentees(menteeData);
+        setAssignments(assignmentData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -53,44 +65,50 @@ const MenteeList: React.FC = () => {
       }
     };
 
-    fetchMenteesAndAssignments();
+    fetchData();
   }, []);
 
-  const groupedMentors: GroupedMentors = mentees.reduce((acc: GroupedMentors, mentee) => {
-    if (!acc[mentee.mentor_name]) acc[mentee.mentor_name] = { mentees: [], assignments: [] };
+  const groupedMentors = mentees.reduce((acc: GroupedMentors, mentee) => {
+    if (!acc[mentee.mentor_name]) {
+      acc[mentee.mentor_name] = { mentees: [], assignments: [] };
+    }
     acc[mentee.mentor_name].mentees.push(mentee);
     return acc;
   }, {});
 
-  assignments.forEach((assignment) => {
-    mentees.forEach((mentee) => {
-      if (mentee.email === assignment.email) {
-        if (groupedMentors[mentee.mentor_name]) {
-          groupedMentors[mentee.mentor_name].assignments.push(assignment);
-        }
-      }
-    });
+  assignments.forEach(assignment => {
+    const mentee = mentees.find(m => m.email === assignment.email);
+    if (mentee && groupedMentors[mentee.mentor_name]) {
+      groupedMentors[mentee.mentor_name].assignments.push(assignment);
+    }
   });
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen text-xl text-gray-600">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen text-xl text-gray-600">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900 mr-2"></div>
+        Loading...
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-    <div className="flex justify-between items-center mb-6">
-      <h1 className="text-3xl font-bold text-gray-800">Mentor Assignment Progress</h1>
-      <button 
-        className="px-4 py-2 text-white rounded-lg bg-[#990011] hover:bg-[#77000e] transition-colors duration-200 shadow-md"
-        onClick={() => router.push('/dashboard')}
-      >
-        Dashboard
-      </button>
-    </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Object.entries(groupedMentors).map(([mentorName, { mentees, assignments }]) => (
-          <MentorBarGraph key={mentorName} mentorName={mentorName} mentees={mentees} assignments={assignments} />
-        ))}
+    <div className="h-screen overflow-auto bg-gray-50">
+      <div className="p-6">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-800">Mentor Assignment Progress</h1>
+        </div>
+        
+        <div className="space-y-6">
+          {Object.entries(groupedMentors).map(([mentorName, { mentees, assignments }]) => (
+            <MentorBarGraph
+              key={mentorName}
+              mentorName={mentorName}
+              mentees={mentees}
+              assignments={assignments}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -164,77 +164,25 @@ const ChatboxPage: React.FC = () => {
           <div className="flex flex-col space-y-2">
             <div className=" p-2 rounded-md relative">
               <button
-                className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95"
-                onClick={toggleDropdown}
+                onClick={()=>{router.push('/dashboard')}}
+                className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
               >
-                {selectedDepartment}
-                <span>{isOpen ? "▲" : "▼"}</span>
+                Dashboard
               </button>
-              <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  isOpen ? "max-h-screen" : "max-h-0"
-                }`}
-              >
-                <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-md">
-                  {[
-                    "Cyber Security",
-                    "CSE",
-                    "ECE",
-                    "EEE",
-                    "AIML",
-                    "AIDS",
-                  ].map((dept) => (
-                    <li key={dept}>
-                      <button
-                        className="w-full text-left np hover:bg-[#990011] p-2 rounded-md"
-                        onClick={() => handleSelectDepartment(dept)}
-                      >
-                        {dept}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <button 
+                onClick={() => router.push('/dashboard/mentor-mentee')}
+                className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
+                >
+                Mentor-Mentee List
+              </button>
             </div>
           </div>
-          <button 
-            onClick={() => router.push('/mentor-mentee')}
-            className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
-            >
-            Mentor-Mentee List
-          </button>
+
           {/* Spacer to push content to the bottom */}
           <div className="flex flex-col items-center justify-center h-full w-full">
           {/* Spacer to push content to the bottom */}
           <div className="flex-grow"></div>
 
-          {/* Links moved to the bottom */}
-          <nav className="mt-6 space-y-2 mb-4 w-full max-w-md">
-            <button
-              onClick={()=>{router.push('/dashboard')}}
-              className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95"
-            >
-              Dashboard
-            </button>
-            <>
-            <input
-              title="SendFile"
-              type="file"
-              ref={fileInputRef}
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <button
-              onClick={handleFileUpload}
-              className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95 border-white border-[1px]"
-            >
-              Upload File
-            </button>
-          </>
-            
-          </nav>
-
-          {/* File Upload button at the very bottom */}
           <button
             className="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded-md mt-6 md:mt-4 w-full max-w-md transition transform duration-200 hover:scale-95"
             onClick={handleLogout}
