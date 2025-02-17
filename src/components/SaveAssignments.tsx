@@ -1,28 +1,45 @@
-import { useState, useRef } from "react";
-import FileUploadButton from "./FileUpload";
+import { useState, useRef, useEffect } from "react";
+import { fetchCourses } from "@/utils/api";
 
 interface SaveAssignmentsProps {
-  apiCall: (formData: FormData) => Promise<Response>;
+  apiCall: (formData: FormData, courseID: string) => Promise<Response>;
 }
 
-export default function SaveAssignments({ apiCall }: SaveAssignmentsProps) {
+interface course{
+  course_name:string;
+  course_id:string;
+}
+
+export default function SaveAssignments({ apiCall}: SaveAssignmentsProps) {
   const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [courses, setCourses] = useState<course[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const courses = [
-    "Data Structures and Algorithms", "Database Management Systems", "Operating System Fundamentals", "Computer Networks", "Artificial Intelligence",
-    "Machine Learning", "Cloud Computing", "Internet of Things", "Blockchain Technology", "Software Engineering",
-    "Psychology", "Statistics", "Business Studies", "Environmental Science"
-  ];
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen)
+  };
 
   const handleCourseSelect = (course: string) => {
     setSelectedCourse(course);
     setIsOpen(false);
     fileInputRef.current?.click(); // Open file upload after selection
   };
+
+  useEffect(() => {
+    setSelectedCourse(null);
+    try{
+      const getCourse = async () => {
+      const response = await fetchCourses();
+      console.log(response.data);
+      setCourses(response.data);
+    }
+      getCourse();
+    }catch(error){
+      console.log(error)
+    }
+  },[]);
 
   return (
     <div className="relative w-full flex flex-col items-start">
@@ -52,9 +69,9 @@ export default function SaveAssignments({ apiCall }: SaveAssignmentsProps) {
             <li key={index} className={index < 4 ? "block" : "hidden lg:block"}>
               <button
                 className="w-full text-left block px-4 py-2 hover:bg-[#990011] rounded-md transition"
-                onClick={() => handleCourseSelect(course)}
+                onClick={() => handleCourseSelect(course.course_id)}
               >
-                {course}
+                {course.course_name}
               </button>
             </li>
           ))}
@@ -73,7 +90,7 @@ export default function SaveAssignments({ apiCall }: SaveAssignmentsProps) {
             const formData = new FormData();
             formData.append("file", file);
 
-            apiCall(formData)
+            apiCall(formData, selectedCourse || "")
               .then((response) => {
                 if (response.status === 200) {
                   alert("File uploaded successfully!");

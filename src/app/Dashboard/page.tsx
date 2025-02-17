@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from 'next/navigation';
-import { logout } from '../../utils/api';
+import { fetchCourses, logout } from '../../utils/api';
 import Bargraph from '@/components/Bargraph';
 import RegisteredStudents from '@/components/RegisteredStudents';
 import FileUploadButton from "@/components/FileUpload";
@@ -27,32 +27,34 @@ const departments = [
   { short: "CSBS", full: "Computer Science and Business Systems" },
 ];
 
-const courses = [
-  { short: "DSA", full: "Data Structures and Algorithms" },
-  { short: "DBMS", full: "Database Management Systems" },
-  { short: "OS", full: "Operating System Fundamentals" },
-  { short: "CN", full: "Computer Networks" },
-  { short: "AI", full: "Artificial Intelligence" },
-  { short: "ML", full: "Machine Learning" },
-  { short: "CC", full: "Cloud Computing" },
-  { short: "IOT", full: "Internet of Things" },
-  { short: "BC", full: "Blockchain Technology" },
-  { short: "SE", full: "Software Engineering" }
-];
+interface course{
+  course_name:string;
+  course_id:string;
+}
 
 const Dashboard: React.FC = () => {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState({ short: "Select Department", full: "" });
-  const [selectedCourse, setSelectedCourse] = useState({ short: "Select Course", full: "" });
+  const [selectedCourse, setSelectedCourse] = useState({ course_name: "Select Course", course_id: "" });
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showMessage, setShowMessage] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [courses, setCourses] = useState<course[]>([])
   const router = useRouter();
 
   useEffect(() => {
     const role = localStorage.getItem('user_role');
     setUserRole(role);
+    try{
+      const getCourse = async () => {
+      const response = await fetchCourses();
+      setCourses(response.data);
+    }
+      getCourse();
+    }catch(error){
+      console.log(error)
+    }
   }, []);
 
   const handleLogout = async () => {
@@ -98,8 +100,8 @@ const Dashboard: React.FC = () => {
     setOpenDropdown(null);
   };
 
-  const handleSelectCourse = (course: { short: string; full: string }) => {
-    setSelectedCourse(course);
+  const handleSelectCourse = (course: course) => {
+    setSelectedCourse({ course_name: course.course_name, course_id: course.course_id });
     setOpenDropdown(null);
   };
 
@@ -108,7 +110,7 @@ const Dashboard: React.FC = () => {
   );
 
   const filteredCourses = courses.filter(course =>
-    course.short.toLowerCase().includes(searchTerm.toLowerCase())
+    course.course_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -159,7 +161,7 @@ const Dashboard: React.FC = () => {
             {/* Course Dropdown */}
             <div className="relative">
               <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95" onClick={() => toggleDropdown('course')}>
-                {selectedCourse.short}
+                {selectedCourse.course_name}
                 <span>{openDropdown === 'course' ? "▲" : "▼"}</span>
               </button>
               <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openDropdown === 'course' ? "max-h-60" : "max-h-0"}`}>
@@ -176,12 +178,12 @@ const Dashboard: React.FC = () => {
                   }}
                 />
                 <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg max-h-40 overflow-y-auto">
-                  {filteredCourses.slice(0, 5).map((course) => (
-                    <li key={course.short}>
-                      <button className="w-full text-left hover:bg-[#990011] p-2 rounded-md" onClick={() => handleSelectCourse(course)}>
-                        {course.short}
-                      </button>
-                    </li>
+                  {filteredCourses.map((course) => (
+                    <li key={course.course_id}>
+                        <button className="w-full text-left hover:bg-[#990011] p-2 rounded-md" onClick={() => handleSelectCourse(course)}>
+                          {course.course_name}
+                        </button>
+                      </li>
                   ))}
                 </ul>
               </div>
@@ -219,7 +221,7 @@ const Dashboard: React.FC = () => {
             />
             <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered" courseID=""/>
             <FileUploadButton apiCall={saveStudents} buttonText="Upload Students" courseID=""/>
-            <FileUploadButton apiCall={saveAssignment} buttonText="Upload Assignments" courseID="ns_noc24_cs94"/>
+            <SaveAssignments apiCall={saveAssignment}/>
           </>
           </nav>
 
@@ -228,16 +230,18 @@ const Dashboard: React.FC = () => {
           </button>
         </div>
       </div>
+      </div>
+
 
       {/* Main Content */}
       <div className="w-full md:w-4/5 p-4 md:p-8" id="dashboard-container">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 p-4 rounded-md text-black">DASHBOARD</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents dept={selectedDepartment.full} courseID=""/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered dept={selectedDepartment.full} courseID=""/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><AverageAssignment dept={selectedDepartment.full} courseId="ns_noc24_cs94"/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><AverageAssignment dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32">File Upload (For automation-data)</div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId="ns_noc24_cs94"/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-64">Pie Chart representation of course completed</div>
         </div>
         <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Total Average of students completed their assignments</div>
@@ -248,7 +252,6 @@ const Dashboard: React.FC = () => {
       <GrafanaEmbed />
     </div>
     </div>
-  </div>
   );
 };
 

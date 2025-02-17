@@ -36,7 +36,7 @@ const MenteeList: React.FC = () => {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
+  useEffect(() => {3
     const fetchMenteesAndAssignments = async () => {
       try {
         const menteeResponse = await fetch("http://localhost:3001/api/mentormentee", { method: "GET", credentials: "include" });
