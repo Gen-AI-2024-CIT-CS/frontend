@@ -42,7 +42,7 @@ export async function middleware(req: NextRequest) {
 
     // Mentor access: Both admin and mentor can access
     if (path.startsWith('/dashboard/mentor')) {
-      if (payload.role !== 'admin' && payload.role !== 'mentor') {
+      if (payload.role !== 'admin' && payload.role !== 'user') {
         console.log('Unauthorized access attempt to /dashboard/mentor. Redirecting to login');
         return NextResponse.redirect(loginUrl);
       }
