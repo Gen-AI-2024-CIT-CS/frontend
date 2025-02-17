@@ -84,9 +84,22 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
       try {
         const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
         setAssignments(assignments);
-        const filteredAssignments = assignments.filter(
-          (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId
-        );
+        var filteredAssignments = assignments;
+        if(props.dept && props.courseId){
+          filteredAssignments = assignments.filter(
+            (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId
+          );
+        }else if(props.dept && !props.courseId){
+          filteredAssignments = assignments.filter(
+            (assignment: any) => assignment.dept === props.dept
+          );
+        }else if(!props.dept && props.courseId){
+          filteredAssignments = assignments.filter(
+            (assignment: any) => assignment.courseid === props.courseId
+          );
+        }else{
+          filteredAssignments = assignments;
+        }
         console.log(filteredAssignments);
         // Calculate completed and not completed for each week
         const completed: number[] = [];
