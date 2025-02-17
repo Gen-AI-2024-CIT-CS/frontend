@@ -1,7 +1,5 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
-import MentorBarGraph from "../components/MentorBarGraph";
+import MentorBarGraph from "./MentorBarGraph";
 
 interface Mentee {
   name: string;
@@ -27,12 +25,15 @@ interface GroupedMentors {
   };
 }
 
-const MenteeList: React.FC = () => {
+interface MenteeListProps {
+  selectedMentor?: string;
+}
+
+const MenteeList: React.FC<MenteeListProps> = ({ selectedMentor = "all" }) => {
   const [mentees, setMentees] = useState<Mentee[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -83,6 +84,14 @@ const MenteeList: React.FC = () => {
     }
   });
 
+  // Get unique mentor names
+  const mentorNames = Object.keys(groupedMentors);
+
+  // Filter displayed mentors based on selection
+  const displayedMentors = selectedMentor === "all"
+    ? mentorNames
+    : [selectedMentor].filter(name => mentorNames.includes(name)); // Only include if mentor exists
+
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen text-xl text-gray-600">
@@ -100,12 +109,12 @@ const MenteeList: React.FC = () => {
         </div>
         
         <div className="space-y-6">
-          {Object.entries(groupedMentors).map(([mentorName, { mentees, assignments }]) => (
+          {displayedMentors.map(mentorName => (
             <MentorBarGraph
               key={mentorName}
               mentorName={mentorName}
-              mentees={mentees}
-              assignments={assignments}
+              mentees={groupedMentors[mentorName].mentees}
+              assignments={groupedMentors[mentorName].assignments}
             />
           ))}
         </div>

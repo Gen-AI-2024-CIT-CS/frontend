@@ -5,14 +5,43 @@ import { useRouter } from "next/navigation";
 import { logout } from "../../../utils/api";
 import MenteeList from "../../../components/MenteeList";
 
+interface Mentor {
+  name: string;
+}
+
 const Dashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showMessage, setShowMessage] = useState(false);
   const router = useRouter();
+  const [mentors, setMentors] = useState<Mentor[]>([]);
+  const [selectedMentor, setSelectedMentor] = useState<string>("all");
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     setUserRole(localStorage.getItem("user_role"));
+    
+    // Fetch mentors list
+    const fetchMentors = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/mentors", {
+          method: "GET",
+          credentials: "include"
+        });
+        
+        if (response.ok) {
+          const mentorData = await response.json();
+          setMentors(mentorData);
+        } else {
+          console.error("Failed to fetch mentors");
+        }
+      } catch (error) {
+        console.error("Error fetching mentors:", error);
+      }
+    };
+
+    fetchMentors();
   }, []);
 
   const handleLogout = async () => {
@@ -33,6 +62,18 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleMentorSelect = (mentorName: string) => {
+    setSelectedMentor(mentorName);
+    setShowFilterDropdown(false);
+  };
+
+  // Filter mentors based on search term
+  const filteredMentors = searchTerm
+    ? mentors.filter(mentor => 
+        mentor.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : mentors;
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -50,11 +91,56 @@ const Dashboard: React.FC = () => {
           
           <button
             className="w-full text-left bg-[#990011] p-2 rounded-md 
-              shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition hover:bg-[#880010]"
+              shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition hover:bg-[#880010] mb-4"
             onClick={() => router.push("/dashboard")}
           >
             Dashboard
           </button>
+
+          {/* Mentor Filter Dropdown */}
+          <div className="relative mb-4">
+            <button
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+              className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md
+                shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition hover:bg-[#880010]"
+            >
+              <span>{selectedMentor === "all" ? "All Mentors" : selectedMentor}</span>
+              <span>{showFilterDropdown ? "▲" : "▼"}</span>
+            </button>
+            
+            {showFilterDropdown && (
+              <div className="absolute left-0 mt-2 w-full bg-white border border-gray-200 rounded-md shadow-lg z-30">
+                <div className="p-2">
+                  <input
+                    type="text"
+                    placeholder="Search mentors..."
+                    className="w-full p-2 border border-gray-300 rounded-md text-black"
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <ul className="max-h-60 overflow-y-auto">
+                  <li
+                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer text-black
+                      ${selectedMentor === "all" ? "bg-blue-100" : ""}`}
+                    onClick={() => handleMentorSelect("all")}
+                  >
+                    All Mentors
+                  </li>
+                  {filteredMentors.map(mentor => (
+                    <li
+                      key={mentor.name}
+                      className={`px-4 py-2 hover:bg-gray-100 cursor-pointer text-black
+                        ${selectedMentor === mentor.name ? "bg-blue-100" : ""}`}
+                      onClick={() => handleMentorSelect(mentor.name)}
+                    >
+                      {mentor.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
 
           <div className="flex-grow" />
 
@@ -78,7 +164,7 @@ const Dashboard: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 min-w-0">
-        <MenteeList />
+        <MenteeList selectedMentor={selectedMentor} />
       </main>
 
       {/* Mobile menu button */}
