@@ -10,22 +10,27 @@ export default function Login() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showContactEmail, setShowContactEmail] = useState(false);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await login(email, password);
       if (response.data.success) {
-        console.log('Logged in successfully', response.data.user);
         setSuccess('Logged in successfully');
-        setTimeout(() => setSuccess(''), 3000);
-        router.push('/dashboard');
+        setTimeout(() => {
+          setSuccess('');
+          router.push('/dashboard');
+        }, 3000);
       }
     } catch (err) {
       setError('Invalid credentials');
       setPassword('');
       setTimeout(() => setError(''), 3000);
+    } finally {
+      setTimeout(() => setLoading(false), 2000);
     }
   };
 
@@ -35,7 +40,10 @@ export default function Login() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-gray-100 p-6 md:bg-gray-100">
-      <div className="w-full max-w-4xl md:flex md:bg-white md:shadow-lg md:rounded-[10px]">
+      <div className="w-full max-w-4xl md:flex md:bg-white md:shadow-lg md:rounded-[10px] relative">
+        {loading && (
+          <div className="absolute top-0 left-0 w-full h-1 bg-[#990011] animate-progress"></div>
+        )}
         <div className="hidden md:flex md:w-1/2 md:flex-col md:items-center md:justify-center md:p-10">
           <div className='md:flex md:flex-row'>
             <h1 className="mb-2 text-2xl font-bold text-gray-900 text-center hover:text-[#990011] hover:cursor-pointer transition-colors duration-250 ease-in-out">NPTEL</h1>
@@ -95,22 +103,13 @@ export default function Login() {
             </div>
             <div className="space-y-2">
               <p className="text-xs text-gray-600">Having any trouble logging in?</p>
-              <div className="relative inline-block pt-1">
-                <button
-                  type="button"
-                  onClick={handleContactAdmin}
-                  className="text-xs font-medium text-[#990011] hover:bg-[#ffe3e7] active:bg-[#ffd7dd] focus:outline-none p-2 rounded-md transition-colors duration-100 ease-in-out"
-                >
-                  Contact Admin
-                </button>
-                <span 
-                  className={`absolute left-0 md:left-full top-full md:top-0 mt-2 md:mt-[12px] md:ml-2 font-medium whitespace-nowrap overflow-hidden text-xs text-[#990011] transition-all duration-300 ease-in-out ${
-                    showContactEmail ? 'w-64 opacity-100' : 'w-0 opacity-0'
-                  }`}
-                >
-                  akshaykumarb.cs2023@citchennai.net
-                </span>
-              </div>
+              <button
+                type="button"
+                onClick={handleContactAdmin}
+                className="text-xs font-medium text-[#990011] hover:bg-[#ffe3e7] active:bg-[#ffd7dd] focus:outline-none p-2 rounded-md transition-colors duration-100 ease-in-out"
+              >
+                Contact Admin
+              </button>
             </div>
             <div className="flex justify-end">
               <button
@@ -123,6 +122,15 @@ export default function Login() {
           </form>
         </div>
       </div>
+      <style jsx>{`
+        @keyframes progress {
+          0% { width: 0%; }
+          100% { width: 100%; }
+        }
+        .animate-progress {
+          animation: progress 2s ease-in-out;
+        }
+      `}</style>
     </main>
   );
 }
