@@ -95,7 +95,7 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
         }else{
           filteredAssignments = assignments;
         }
-        console.log(filteredAssignments);
+        // console.log(filteredAssignments);
         // Calculate completed and not completed for each week
         const completed: number[] = [];
         const notCompleted: number[] = [];

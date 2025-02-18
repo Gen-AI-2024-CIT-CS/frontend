@@ -31,9 +31,22 @@ export default function AverageAssignment(props: AverageAssignmentProps) {
         const getAssignments = async () => {
             try {
                 const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
-                const filteredAssignments = assignments.filter(
+                var filteredAssignments = assignments;
+                if(props.dept && props.courseId){
+                filteredAssignments = assignments.filter(
                     (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId
                 );
+                }else if(props.dept && !props.courseId){
+                filteredAssignments = assignments.filter(
+                    (assignment: any) => assignment.dept === props.dept
+                );
+                }else if(!props.dept && props.courseId){
+                filteredAssignments = assignments.filter(
+                    (assignment: any) => assignment.courseid === props.courseId
+                );
+                }else{
+                filteredAssignments = assignments;
+                }
                 const avg = calculateAverage(filteredAssignments);
                 setAverage(avg);
             } catch (error) {

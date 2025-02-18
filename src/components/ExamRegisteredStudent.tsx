@@ -21,7 +21,7 @@ const ExamRegistered: React.FC<ExamRegisteredProps> = (props) => {
         }else{
           setStudentCount(registeredStudents.length);
         }
-
+    
       } catch (error) {
         console.error("Failed to fetch students", error);
       }

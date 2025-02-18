@@ -9,6 +9,7 @@ import { saveAssignment, saveStudents, saveCoursesEnrolled } from "../../utils/a
 import ExamRegistered from '@/components/ExamRegisteredStudent';
 import SaveAssignments from "@/components/SaveAssignments";
 import GrafanaEmbed from '@/components/GrafanaEmbed';
+import Student from "@/components/Student";
 import AverageAssignment from "@/components/AverageAssignment";
 
 const departments = [
@@ -137,7 +138,7 @@ const Dashboard: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search Department..."
-                  className="w-full p-2 rounded-md mb-2"
+                  className="w-full p-2 rounded-md mb-2 text-black"
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -147,7 +148,7 @@ const Dashboard: React.FC = () => {
                   }}
                 />
                 <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg max-h-40 overflow-y-auto">
-                  {filteredDepartments.slice(0, 5).map((dept) => (
+                  {filteredDepartments.map((dept) => (
                     <li key={dept.short}>
                       <button className="w-full text-left hover:bg-[#990011] p-2 rounded-md" onClick={() => handleSelectDepartment(dept)}>
                         {dept.short}
@@ -168,7 +169,7 @@ const Dashboard: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search Course..."
-                  className="w-full p-2 rounded-md mb-2"
+                  className="w-full p-2 rounded-md mb-2 text-black"
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -237,10 +238,10 @@ const Dashboard: React.FC = () => {
       <div className="w-full md:w-4/5 p-4 md:p-8" id="dashboard-container">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 p-4 rounded-md text-black">DASHBOARD</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><Student dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><AverageAssignment dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32">File Upload (For automation-data)</div>
           <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center h-64">Pie Chart representation of course completed</div>
         </div>
