@@ -32,7 +32,7 @@ export default function SaveAssignments({ apiCall}: SaveAssignmentsProps) {
     try{
       const getCourse = async () => {
       const response = await fetchCourses();
-      console.log(response.data);
+      // console.log(response.data);
       setCourses(response.data);
     }
       getCourse();
@@ -46,10 +46,9 @@ export default function SaveAssignments({ apiCall}: SaveAssignmentsProps) {
       {/* Upload Button */}
       <button
         onClick={toggleDropdown}
-        className="w-full text-left flex justify-between items-center bg-[#990011] text-white p-3 rounded-md shadow-md transition-transform duration-200 hover:scale-95"
+        className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95 border-white border-[1px]"
       >
         {selectedCourse || "Upload Assignments"}
-        <span>{isOpen ? ">" : ">"}</span>
       </button>
 
       {/* Dropdown Dashboard (Slide from Left) */}

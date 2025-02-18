@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { fetchCourses, logout } from '../../utils/api';
 import Bargraph from '@/components/Bargraph';
+import CompletionTrendsChart from "@/components/LineGraph";
 import RegisteredStudents from '@/components/RegisteredStudents';
 import FileUploadButton from "@/components/FileUpload";
 import { saveAssignment, saveStudents, saveCoursesEnrolled } from "../../utils/api";
@@ -13,7 +14,7 @@ import Student from "@/components/Student";
 import AverageAssignment from "@/components/AverageAssignment";
 
 const departments = [
-  { short: "All Departments", full: "All Departments" },
+  { short: "All Departments", full: "" },
   { short: "CS", full: "Cyber Security" },
   { short: "CSE", full: "Computer Science and Engineering" },
   { short: "AIML", full: "Artificial Intelligence and Machine Learning" },
@@ -130,7 +131,7 @@ const Dashboard: React.FC = () => {
           <div className="flex flex-col space-y-2">
             {/* Department Dropdown */}
             <div className="relative">
-              <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95" onClick={() => toggleDropdown('department')}>
+              <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95 outline-none" onClick={() => toggleDropdown('department')}>
                 {selectedDepartment.short}
                 <span>{openDropdown === 'department' ? "▲" : "▼"}</span>
               </button>
@@ -138,7 +139,7 @@ const Dashboard: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search Department..."
-                  className="w-full p-2 rounded-md mb-2 text-black"
+                  className="w-full p-2 rounded-md mb-2 text-black outline-none"
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -161,7 +162,7 @@ const Dashboard: React.FC = () => {
 
             {/* Course Dropdown */}
             <div className="relative">
-              <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95" onClick={() => toggleDropdown('course')}>
+              <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95 outline-none" onClick={() => toggleDropdown('course')}>
                 {selectedCourse.course_name}
                 <span>{openDropdown === 'course' ? "▲" : "▼"}</span>
               </button>
@@ -169,7 +170,7 @@ const Dashboard: React.FC = () => {
                 <input
                   type="text"
                   placeholder="Search Course..."
-                  className="w-full p-2 rounded-md mb-2 text-black"
+                  className="w-full p-2 rounded-md mb-2 text-black outline-none"
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -238,15 +239,13 @@ const Dashboard: React.FC = () => {
       <div className="w-full md:w-4/5 p-4 md:p-8" id="dashboard-container">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 p-4 rounded-md text-black">DASHBOARD</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><Student dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><RegisteredStudents dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><ExamRegistered dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-32"><AverageAssignment dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-3"><Bargraph dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-64">Pie Chart representation of course completed</div>
-        </div>
-        <div className="bg-[#dedada] p-4 rounded-md text-center h-32">Total Average of students completed their assignments</div>
-        
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]"><RegisteredStudents dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]"><ExamRegistered dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]"><AverageAssignment dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]"></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-2"><Bargraph dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2"><CompletionTrendsChart dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
+        </div>        
       </div>
     </div>
     </div>
