@@ -52,8 +52,7 @@ interface ChatMessage {
 // Storage key for chat history - adding user specific info
 const getChatHistoryKey = () => {
   // Use a user identifier if available (e.g., from a user context or session)
-  const userEmail = typeof window !== 'undefined' ? localStorage.getItem('user_email') : null;
-  return userEmail ? `nptel_chat_history_${userEmail}` : 'nptel_chat_history';
+  return 'nptel_chat_history';
 };
 
 const ChatboxPage: React.FC = () => {
