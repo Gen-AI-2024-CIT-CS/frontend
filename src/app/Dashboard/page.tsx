@@ -133,7 +133,7 @@ const Dashboard: React.FC = () => {
             <div className="relative">
               <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95 outline-none" onClick={() => toggleDropdown('department')}>
                 {selectedDepartment.short}
-                <span>{openDropdown === 'department' ? "▲" : "▼"}</span>
+                <span>{openDropdown === 'department' ? "🡹" : "🡻"}</span>
               </button>
               <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openDropdown === 'department' ? "max-h-60" : "max-h-0"}`}>
                 <input
@@ -164,7 +164,7 @@ const Dashboard: React.FC = () => {
             <div className="relative">
               <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95 outline-none" onClick={() => toggleDropdown('course')}>
                 {selectedCourse.course_name}
-                <span>{openDropdown === 'course' ? "▲" : "▼"}</span>
+                <span>{openDropdown === 'course' ? "🡹" : "🡻"}</span>
               </button>
               <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openDropdown === 'course' ? "max-h-60" : "max-h-0"}`}>
                 <input
