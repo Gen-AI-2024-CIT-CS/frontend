@@ -50,12 +50,7 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
         callbacks: {
           label: function(context: TooltipItem<'bar'>) {
             if (context.dataset.label === 'Not Completed') {
-              const weekIndex = context.dataIndex;
-              const weekLabel = `assignment${weekIndex+1}`; // Fixed string interpolation
-              const notCompletedStudents = assignments
-                .filter((assignment: AssignmentData) => assignment[weekLabel as keyof AssignmentData] === "0.00")
-                .map((assignment: AssignmentData) => assignment.name);
-              return `Not Completed: ${notCompletedStudents.join(', ')}`;
+              return `Not Completed: ${context.raw}`;
             } else {
               return `Completed: ${context.raw}`;
             }
