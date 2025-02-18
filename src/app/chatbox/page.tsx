@@ -11,7 +11,7 @@ interface User {
   email: string;
   roll_no: string;
   role: string;
-  [key: string]: string | number; // Add index signature for dynamic properties
+  [key: string]: string | number;
 }
 
 interface TableContent {
@@ -49,6 +49,13 @@ interface ChatMessage {
   content: MessageContent;
 }
 
+// Storage key for chat history - adding user specific info
+const getChatHistoryKey = () => {
+  // Use a user identifier if available (e.g., from a user context or session)
+  const userEmail = typeof window !== 'undefined' ? localStorage.getItem('user_email') : null;
+  return userEmail ? `nptel_chat_history_${userEmail}` : 'nptel_chat_history';
+};
+
 const ChatboxPage: React.FC = () => {
   const [message, setMessage] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -57,9 +64,39 @@ const ChatboxPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const [selectedDepartment, setSelectedDepartment] = useState("Select Department");
+  const [initialized, setInitialized] = useState(false);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  // Load chat history from local storage on component mount
+  useEffect(() => {
+    // Only run this on the client side
+    if (typeof window !== 'undefined') {
+      const savedChatHistory = localStorage.getItem(getChatHistoryKey());
+      if (savedChatHistory) {
+        try {
+          const parsedHistory = JSON.parse(savedChatHistory);
+          if (Array.isArray(parsedHistory)) {
+            setChatHistory(parsedHistory);
+          }
+        } catch (error) {
+          console.error('Error parsing saved chat history:', error);
+          // If there's an error parsing, clear the potentially corrupted data
+          localStorage.removeItem(getChatHistoryKey());
+        }
+      }
+      setInitialized(true);
+    }
+  }, []);
+
+  // Save chat history to local storage whenever it changes
+  useEffect(() => {
+    // Only save after initial load and when changes occur
+    if (initialized && typeof window !== 'undefined') {
+      localStorage.setItem(getChatHistoryKey(), JSON.stringify(chatHistory));
+    }
+  }, [chatHistory, initialized]);
 
   const handleSelectDepartment = (department: string) => {
     setSelectedDepartment(department);
@@ -155,6 +192,11 @@ const ChatboxPage: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      // Clear chat history from local storage when logging out
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(getChatHistoryKey());
+      }
+      
       await logout();
       router.push('/login');
     } catch (error) {
