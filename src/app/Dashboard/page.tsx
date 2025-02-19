@@ -119,7 +119,7 @@ const Dashboard: React.FC = () => {
     <div className="bg-gray-100">
     <div className="flex flex-col md:flex-row">
       {/* Sidebar */}
-      <div className={`h-screen w-3/5 md:w-1/6 bg-[#990011] text-white flex flex-col p-4 pt-0 justify-start transform transition-transform duration-300 ease-in-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative z-10`}>
+      <div className={`min-h-screen w-3/5 md:w-1/6 bg-[#990011] text-white flex flex-col p-4 pt-0 justify-start transform transition-transform duration-300 ease-in-out ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative z-10`}>
         <div className="md:hidden flex justify-end mb-4">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="focus:outline-none">
             <div className="text-3xl text-white">&lt;</div>

@@ -105,7 +105,7 @@ const Dashboard: React.FC = () => {
                 shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition hover:bg-[#880010]"
             >
               <span>{selectedMentor === "all" ? "All Mentors" : selectedMentor}</span>
-              <span>{showFilterDropdown ? "▲" : "▼"}</span>
+              <span>{showFilterDropdown ? "🡹" : "🡻"}</span>
             </button>
             
             {showFilterDropdown && (
