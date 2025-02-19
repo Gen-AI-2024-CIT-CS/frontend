@@ -9,13 +9,51 @@ interface User {
   id: number;
   name: string;
   email: string;
+  roll_no: string;
   role: string;
+  [key: string]: string | number;
 }
+
+interface TableContent {
+  columns: string[];
+  rows: string[][];
+  explanation: string;
+}
+
+interface YesNoContent {
+  answer: string;
+  explanation: string;
+}
+
+interface DataTypeContent {
+  information: string;
+  explanation: string;
+}
+
+interface GeneralContent {
+  answer: string;
+  explanation: string;
+}
+
+type MessageContent = 
+  | string 
+  | User[] 
+  | TableContent 
+  | YesNoContent 
+  | DataTypeContent 
+  | GeneralContent;
 
 interface ChatMessage {
   type: 'user' | 'bot';
-  content: string | User[];
+  contentType?: 'text' | 'table' | 'yes_no' | 'data_type' | 'general';
+  content: MessageContent;
 }
+
+// Storage key for chat history - adding user specific info
+const getChatHistoryKey = () => {
+  // Use a user identifier if available (e.g., from a user context or session)
+  return 'nptel_chat_history';
+};
 
 const ChatboxPage: React.FC = () => {
   const [message, setMessage] = useState('');
@@ -25,9 +63,39 @@ const ChatboxPage: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const router = useRouter();
   const [selectedDepartment, setSelectedDepartment] = useState("Select Department");
+  const [initialized, setInitialized] = useState(false);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  // Load chat history from local storage on component mount
+  useEffect(() => {
+    // Only run this on the client side
+    if (typeof window !== 'undefined') {
+      const savedChatHistory = localStorage.getItem(getChatHistoryKey());
+      if (savedChatHistory) {
+        try {
+          const parsedHistory = JSON.parse(savedChatHistory);
+          if (Array.isArray(parsedHistory)) {
+            setChatHistory(parsedHistory);
+          }
+        } catch (error) {
+          console.error('Error parsing saved chat history:', error);
+          // If there's an error parsing, clear the potentially corrupted data
+          localStorage.removeItem(getChatHistoryKey());
+        }
+      }
+      setInitialized(true);
+    }
+  }, []);
+
+  // Save chat history to local storage whenever it changes
+  useEffect(() => {
+    // Only save after initial load and when changes occur
+    if (initialized && typeof window !== 'undefined') {
+      localStorage.setItem(getChatHistoryKey(), JSON.stringify(chatHistory));
+    }
+  }, [chatHistory, initialized]);
 
   const handleSelectDepartment = (department: string) => {
     setSelectedDepartment(department);
@@ -37,7 +105,6 @@ const ChatboxPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = () => {
-    // Trigger the file input dialog
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
@@ -47,7 +114,6 @@ const ChatboxPage: React.FC = () => {
     const file = event.target.files?.[0];
     if (file) {
       console.log('Selected file:', file);
-      // You can now upload the file to the server or process it
     }
   };
 
@@ -56,39 +122,66 @@ const ChatboxPage: React.FC = () => {
     
     if (!message.trim()) return;
   
-    setChatHistory(prev => [...prev, { type: 'user', content: message }]);
+    setChatHistory(prev => [...prev, { type: 'user', contentType: 'text', content: message }]);
   
     try {
       const res = await chat(message);
-      // Handle different response types
-      if (res.data.response === 'No student found with this name. Please try again.') {
-        // Handle "no student found" case
+      
+      if (res.data.error) {
         setChatHistory(prev => [...prev, { 
           type: 'bot', 
-          content: 'No student found with this name. Please try again.' 
+          contentType: 'text', 
+          content: `Error: ${res.data.error}` 
         }]);
-      } else if (res.data.email && res.data.id && res.data.name && res.data.role) {
-        // Handle user data response
+      } else if (res.data.type === 'table' && res.data.columns && res.data.rows) {
         setChatHistory(prev => [...prev, { 
           type: 'bot', 
-          content: [{
-            id: res.data.id,
-            name: res.data.name,
-            email: res.data.email,
-            role: res.data.role
-          }]
+          contentType: 'table',
+          content: {
+            columns: res.data.columns,
+            rows: res.data.rows,
+            explanation: res.data.explanation || 'Here is the table data you requested.'
+          }
+        }]);
+      } else if (res.data.type === 'yes_no') {
+        setChatHistory(prev => [...prev, { 
+          type: 'bot', 
+          contentType: 'yes_no',
+          content: {
+            answer: res.data.answer,
+            explanation: res.data.explanation || 'Based on the data analysis.'
+          }
+        }]);
+      } else if (res.data.type === 'data_type') {
+        setChatHistory(prev => [...prev, { 
+          type: 'bot', 
+          contentType: 'data_type',
+          content: {
+            information: res.data.information,
+            explanation: res.data.explanation || 'Data type information.'
+          }
+        }]);
+      } else if (res.data.type === 'general') {
+        setChatHistory(prev => [...prev, { 
+          type: 'bot', 
+          contentType: 'general',
+          content: {
+            answer: res.data.answer,
+            explanation: res.data.explanation || ''
+          }
         }]);
       } else {
-        // Handle any other response type
         setChatHistory(prev => [...prev, { 
           type: 'bot', 
-          content: 'Sorry, I could not process that request.' 
+          contentType: 'text',
+          content: 'Sorry, I could not process that request.'
         }]);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
       setChatHistory(prev => [...prev, { 
         type: 'bot', 
+        contentType: 'text',
         content: 'Sorry, an error occurred.' 
       }]);
     }
@@ -98,7 +191,11 @@ const ChatboxPage: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      // Call the logout API
+      // Clear chat history from local storage when logging out
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(getChatHistoryKey());
+      }
+      
       await logout();
       router.push('/login');
     } catch (error) {
@@ -107,31 +204,150 @@ const ChatboxPage: React.FC = () => {
   };  
 
   const renderMessage = (msg: ChatMessage) => {
-    return (
-      <div className={`p-3 mb-2 rounded-lg ${
-        msg.type === 'user' ? 'bg-blue-100 ml-auto' : 'bg-gray-100 mr-auto'
-      } max-w-3/4`}>
-        <strong>{msg.type === 'user' ? 'You: ' : 'Bot: '}</strong>
-        {typeof msg.content === 'string' ? (
-          <p>{msg.content}</p>
-        ) : (
-          Array.isArray(msg.content) && msg.content.length > 0 ? (
-            <ul>
-              {msg.content.map((user: User) => (
-                <li key={user.id} className="mt-2">
-                  <p><strong>ID:</strong> {user.id}</p>
-                  <p><strong>Name:</strong> {user.name}</p>
-                  <p><strong>Email:</strong> {user.email}</p>
-                  <p><strong>Role:</strong> {user.role}</p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No user data available.</p>
-          )
-        )}
-      </div>
-    );
+    if (msg.type === 'user' || msg.contentType === 'text' || typeof msg.content === 'string') {
+      return (
+        <div
+          className={`p-4 mb-3 rounded-lg ${
+            msg.type === "user" 
+              ? "bg-blue-100 ml-auto border-2 border-blue-200" 
+              : "bg-gray-100 mr-auto border-2 border-gray-200"
+          } max-w-3/4 shadow-sm transition-all duration-200 hover:shadow-md`}
+        >
+          <strong className={msg.type === "user" ? "text-blue-700" : "text-gray-700"}>
+            {msg.type === "user" ? "You: " : "Bot: "}
+          </strong>
+          <p className="mt-1">{typeof msg.content === 'string' ? msg.content : 'Unknown message format'}</p>
+        </div>
+      );
+    }
+  
+    if (msg.contentType === 'table' && 'columns' in msg.content) {
+      const { columns, rows, explanation } = msg.content as TableContent;
+  
+      return (
+        <div className="p-4 mb-3 rounded-lg bg-indigo-50 mr-auto max-w-[100%] border-2 border-indigo-200 shadow-md overflow-auto">
+          <div className="flex items-center mb-2">
+            <div className="bg-indigo-500 p-2 rounded-full mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <strong className="text-indigo-700 text-lg">Table Result</strong>
+          </div>
+          <p className="mb-3 text-gray-700">{explanation}</p>
+          <div className="overflow-x-auto mt-4 rounded-lg border border-indigo-200 bg-white shadow-inner">
+            <div className="max-h-80 overflow-y-auto">
+              <table className="min-w-full table-auto border-collapse">
+                <thead className="bg-indigo-100 sticky top-0">
+                  <tr>
+                    {columns.map((col, idx) => (
+                      <th key={idx} className="px-4 py-3 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">
+                        {col}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row, index) => (
+                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-indigo-50 hover:bg-indigo-100 transition-colors duration-150'}>
+                      {row.map((cell, cellIndex) => (
+                        <td key={cellIndex} className="px-4 py-2 border-b border-indigo-100 text-gray-700">
+                          {cell ?? "N/A"}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  
+    if (msg.contentType === 'yes_no' && 'answer' in msg.content) {
+      const { answer, explanation } = msg.content as YesNoContent;
+      const isYes = answer.toLowerCase() === 'yes';
+      const isNo = answer.toLowerCase() === 'no';
+      
+      return (
+        <div className={`p-4 mb-3 rounded-lg mr-auto max-w-3/4 shadow-md border-2
+          ${isYes ? 'bg-green-50 border-green-200' : 
+            isNo ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'}`}>
+          <div className="flex items-center mb-3">
+            <div className={`p-2 rounded-full mr-2
+              ${isYes ? 'bg-green-500' : 
+                isNo ? 'bg-red-500' : 'bg-yellow-500'}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                {isYes ? (
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                ) : isNo ? (
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                ) : (
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                )}
+              </svg>
+            </div>
+            <strong className={`font-bold text-lg
+              ${isYes ? 'text-green-700' : 
+                isNo ? 'text-red-700' : 'text-yellow-700'}`}>
+              {answer.toUpperCase()}
+            </strong>
+          </div>
+          <p className="text-gray-700 ml-9">{explanation}</p>
+        </div>
+      );
+    }
+  
+    if (msg.contentType === 'data_type' && 'information' in msg.content) {
+      const { information, explanation } = msg.content as DataTypeContent;
+      
+      return (
+        <div className="p-4 mb-3 rounded-lg bg-blue-50 mr-auto max-w-3/4 border-2 border-blue-200 shadow-md">
+          <div className="flex items-start mb-2">
+            <div className="bg-blue-500 p-2 rounded-full mr-2 mt-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-blue-700">Data Type Information:</h3>
+              <div className="bg-white p-3 rounded border border-blue-200 mt-2 shadow-inner text-gray-800">
+                {information}
+              </div>
+            </div>
+          </div>
+          {explanation && <p className="mt-3 text-gray-700 ml-9">{explanation}</p>}
+        </div>
+      );
+    }
+  
+    if (msg.contentType === 'general' && 'answer' in msg.content) {
+      const { answer, explanation } = msg.content as GeneralContent;
+      
+      return (
+        <div className="p-4 mb-3 rounded-lg bg-purple-50 mr-auto max-w-3/4 border-2 border-purple-200 shadow-md">
+          <div className="flex items-center mb-2">
+            <div className="bg-purple-500 p-2 rounded-full mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <strong className="text-purple-700">Response</strong>
+          </div>
+          <div className="ml-9">
+            <p className="text-gray-800">{answer}</p>
+            {explanation && (
+              <div className="mt-3 text-sm text-gray-600 border-t border-purple-200 pt-2">
+                <p>{explanation}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+  
+    return null;
   };
 
   useEffect(() => {
@@ -142,45 +358,36 @@ const ChatboxPage: React.FC = () => {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      {/* Sidebar */}
       <div
         className={`h-screen w-3/5 md:w-1/6 bg-[#990011] text-white flex flex-col p-4 pt-0 justify-start transform transition-transform duration-300 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         } md:translate-x-0 fixed md:relative z-10`}
       >
-        {/* Close Button for Mobile View */}
         <div className="md:hidden flex justify-end mb-4">
           <button onClick={toggleSidebar} className="focus:outline-none">
             <div className="text-3xl text-white">
-              {/* Use the less-than symbol to indicate closing */}
               &lt;
             </div>
           </button>
         </div>
 
-        {/* Sidebar Content */}
         <div className="flex flex-col justify-start h-full">
-          <h2 className="text-xl font-bold mb-4 mt-2">Filters</h2> {/* Reduced top margin */}
+          <h2 className="text-xl font-bold mb-4 mt-2">Filters</h2>
           <div className="flex flex-col space-y-2">
-            <div className=" p-2 rounded-md relative">
-              <button
-                onClick={()=>{router.push('/dashboard')}}
-                className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
-              >
-                Dashboard
-              </button>
-              <button 
-                onClick={() => router.push('/dashboard/mentor-mentee')}
-                className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
-                >
-                Mentor-Mentee List
-              </button>
-            </div>
+            <button
+              onClick={() => { router.push('/dashboard') }}
+              className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => router.push('/dashboard/mentor-mentee')}
+              className="w-full text-left bg-[#990011] hover:bg-[#77000e] p-2 rounded-md shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition transform duration-200 hover:scale-95 mt-4"
+            >
+              Mentor-Mentee List
+            </button>
           </div>
 
-          {/* Spacer to push content to the bottom */}
-          <div className="flex flex-col items-center justify-center h-full w-full">
-          {/* Spacer to push content to the bottom */}
           <div className="flex-grow"></div>
 
           <button
@@ -190,34 +397,29 @@ const ChatboxPage: React.FC = () => {
             Logout
           </button>
         </div>
-        </div>
       </div>
-      {/* Main Content */}
+
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Hamburger Menu for Mobile View */}
         <div className="md:hidden flex justify-start mb-4">
           <button onClick={toggleSidebar} className="focus:outline-none">
             <div className="text-3xl p-1 border b-2 border-black px-3 rounded-xl text-black">
-              {/* Hamburger Menu Icon */}
-              {sidebarOpen ? (
-                <span>&#10005;</span> // Cross symbol (X) for closing
-              ) : (
-                <span>&#9776;</span> // Hamburger menu (☰) for opening
-              )}
+              {sidebarOpen ? <span>&#10005;</span> : <span>&#9776;</span>}
             </div>
           </button>
         </div>
-        {/* Header */}
+
         <header className="bg-[#990011] text-white p-4">
           <h1 className="text-lg font-semibold text-center">Chatbot - Nptel Automation Tool</h1>
         </header>
 
-        {/* Chat Container (Scrollable) */}
         <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 bg-gray-100 text-black">
-          {chatHistory.map((msg, index) => renderMessage(msg))}
+          {chatHistory.map((msg, index) => (
+            <div key={index}>
+              {renderMessage(msg)}
+            </div>
+          ))}
         </div>
 
-        {/* Input Area (Fixed at bottom) */}
         <div className="p-4 bg-transparent text-black">
           <form onSubmit={handleSend} className="flex items-center">
             <input
