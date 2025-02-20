@@ -64,7 +64,8 @@ const ChatboxPage: React.FC = () => {
   const router = useRouter();
   const [selectedDepartment, setSelectedDepartment] = useState("Select Department");
   const [initialized, setInitialized] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
+  
   const toggleDropdown = () => setIsOpen(!isOpen);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -121,7 +122,7 @@ const ChatboxPage: React.FC = () => {
     e.preventDefault();
     
     if (!message.trim()) return;
-  
+    setIsLoading(true);
     setChatHistory(prev => [...prev, { type: 'user', contentType: 'text', content: message }]);
   
     try {
@@ -185,8 +186,10 @@ const ChatboxPage: React.FC = () => {
         content: 'Sorry, an error occurred.' 
       }]);
     }
-  
-    setMessage('');
+    finally{
+      setIsLoading(false);
+      setMessage('');
+    }
   };
 
   const handleLogout = async () => {
@@ -223,7 +226,10 @@ const ChatboxPage: React.FC = () => {
   
     if (msg.contentType === 'table' && 'columns' in msg.content) {
       const { columns, rows, explanation } = msg.content as TableContent;
-  
+    
+      // Add error handling for table data
+      const hasValidRows = Array.isArray(rows) && rows.length > 0;
+      
       return (
         <div className="p-4 mb-3 rounded-lg bg-indigo-50 mr-auto max-w-[100%] border-2 border-indigo-200 shadow-md overflow-auto">
           <div className="flex items-center mb-2">
@@ -235,32 +241,43 @@ const ChatboxPage: React.FC = () => {
             <strong className="text-indigo-700 text-lg">Table Result</strong>
           </div>
           <p className="mb-3 text-gray-700">{explanation}</p>
-          <div className="overflow-x-auto mt-4 rounded-lg border border-indigo-200 bg-white shadow-inner">
-            <div className="max-h-80 overflow-y-auto">
-              <table className="min-w-full table-auto border-collapse">
-                <thead className="bg-indigo-100 sticky top-0">
-                  <tr>
-                    {columns.map((col, idx) => (
-                      <th key={idx} className="px-4 py-3 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">
-                        {col}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row, index) => (
-                    <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-indigo-50 hover:bg-indigo-100 transition-colors duration-150'}>
-                      {row.map((cell, cellIndex) => (
-                        <td key={cellIndex} className="px-4 py-2 border-b border-indigo-100 text-gray-700">
-                          {cell ?? "N/A"}
-                        </td>
+          
+          {hasValidRows ? (
+            <div className="overflow-x-auto mt-4 rounded-lg border border-indigo-200 bg-white shadow-inner">
+              <div className="max-h-80 overflow-y-auto">
+                <table className="min-w-full table-auto border-collapse">
+                  <thead className="bg-indigo-100 sticky top-0">
+                    <tr>
+                      {columns.map((col, idx) => (
+                        <th key={idx} className="px-4 py-3 text-left text-sm font-semibold text-indigo-800 border-b border-indigo-200">
+                          {col}
+                        </th>
                       ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {rows.map((row, index) => (
+                      <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-indigo-50 hover:bg-indigo-100 transition-colors duration-150'}>
+                        {Array.isArray(row) ? row.map((cell, cellIndex) => (
+                          <td key={cellIndex} className="px-4 py-2 border-b border-indigo-100 text-gray-700">
+                            {cell ?? "N/A"}
+                          </td>
+                        )) : (
+                          <td colSpan={columns.length} className="px-4 py-2 border-b border-indigo-100 text-gray-700">
+                            Invalid row data
+                          </td>
+                        )}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="p-4 bg-white rounded-lg border border-red-200 text-red-600">
+              No data available or received invalid table format.
+            </div>
+          )}
         </div>
       );
     }
@@ -421,23 +438,29 @@ const ChatboxPage: React.FC = () => {
         </div>
 
         <div className="p-4 bg-transparent text-black">
-          <form onSubmit={handleSend} className="flex items-center">
-            <input
-              type="text"
-              placeholder="Enter Text"
-              className="flex-grow p-1.5 rounded-l-xl border border-gray-300 transition transform duration-200 focus:outline-none hover:ring-1 hover:ring-[#990011]"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-            />
-            <button
-              title="send"
-              type="submit"
-              className="p-2 bg-[#990011] text-white rounded-r-full hover:bg-[#660000] transition transform duration-200 hover:scale-95"
-            >
+        <form onSubmit={handleSend} className="flex items-center">
+          <input
+            type="text"
+            placeholder={isLoading ? "Processing..." : "Enter Text"}
+            className="flex-grow p-1.5 rounded-l-xl border border-gray-300 transition transform duration-200 focus:outline-none hover:ring-1 hover:ring-[#990011]"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            disabled={isLoading}
+          />
+          <button
+            title="send"
+            type="submit"
+            className={`p-2 ${isLoading ? 'bg-gray-400' : 'bg-[#990011] hover:bg-[#660000]'} text-white rounded-r-full transition transform duration-200 ${!isLoading && 'hover:scale-95'}`}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="h-6 w-6 animate-spin rounded-full border-b-2 border-white"></div>
+            ) : (
               <PaperAirplaneIcon className="h-6 w-6 transition transform duration-200 hover:scale-95" />
-            </button>
-          </form>
-        </div>
+            )}
+          </button>
+        </form>
+      </div>
       </div>
     </div>
   );

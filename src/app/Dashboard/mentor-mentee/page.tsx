@@ -44,12 +44,22 @@ const Dashboard: React.FC = () => {
     fetchMentors();
   }, []);
 
+  // Storage key for chat history - adding user specific info
+  const getChatHistoryKey = () => {
+  // Use a user identifier if available (e.g., from a user context or session)
+    return 'nptel_chat_history';
+  };
+
   const handleLogout = async () => {
     try {
+      // Clear chat history from local storage when logging out
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(getChatHistoryKey());
+      }
       await logout();
-      router.push("/login");
+      router.push('/login');
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error('Logout failed:', error);
     }
   };
 

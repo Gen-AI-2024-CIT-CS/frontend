@@ -105,12 +105,12 @@ const MentorBarGraph: React.FC<MentorBarGraphProps> = ({ mentorName, mentees, as
           {
             label: "Completed",
             data: weeklyStats.map(stat => stat.completed),
-            backgroundColor: "#4CAF50"
+            backgroundColor: 'rgba(255, 99, 0, 0.5)',
           },
           {
             label: "Not Completed",
             data: weeklyStats.map(stat => stat.notCompleted),
-            backgroundColor: "#FF5733"
+            backgroundColor: 'rgba(53, 162, 235, 0.5)',
           }
         ]
       });

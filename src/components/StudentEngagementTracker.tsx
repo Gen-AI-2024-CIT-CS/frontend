@@ -104,9 +104,9 @@ const StudentEngagementTracker = ({ dept, courseId }: StudentEngagementTrackerPr
         
         // Set fallback data in case of error
         setEngagementData([
-          { metric: 'Course Enrollment', value: 78, fullMark: 100 },
-          { metric: 'Exam Registration', value: 65, fullMark: 100 },
-          { metric: 'Assignment Score', value: 72, fullMark: 100 }
+          { metric: 'Course Enrollment', value: 0, fullMark: 100 },
+          { metric: 'Exam Registration', value: 0, fullMark: 100 },
+          { metric: 'Assignment Score', value: 0, fullMark: 100 }
         ]);
         
         setLoading(false);
@@ -152,14 +152,25 @@ const StudentEngagementTracker = ({ dept, courseId }: StudentEngagementTrackerPr
               <PolarAngleAxis dataKey="metric" tick={{ fill: '#374151', fontSize: 10 }} />
               <PolarRadiusAxis angle={45} domain={[0, 100]} />
               <Radar
-                name="Performance"
-                dataKey="value"
-                stroke="#990011"
-                fill="#990011"
-                fillOpacity={0.5}
+              name="Performance"
+              dataKey="value"
+              stroke="#69c6c6"
+              fill="#69c6c6"
+              fillOpacity={0.5}
               />
-              <Tooltip formatter={(value) => [`${value}%`, 'Score']} />
-              <Legend wrapperStyle={{ fontSize: 12, bottom: 0 }} />
+              <Tooltip 
+              formatter={(value) => [`${value}%`, 'Score']}
+              contentStyle={{ 
+                backgroundColor: '#333',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '4px'
+              }}
+              />
+              <Legend 
+              wrapperStyle={{ fontSize: 12, bottom: 10 }}
+              formatter={(value) => <span style={{ color: "#374151" }}>{value}</span>}
+              />
             </RadarChart>
           </ResponsiveContainer>
         )}
