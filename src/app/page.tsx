@@ -22,8 +22,8 @@ const HomePage = () => {
           return words[(currentIndex + 1) % words.length];
         });
         setIsAnimating(false);
-      }, 1000); // Smooth transition time
-    }, 3000);
+      }, 500); // Smooth transition time
+    }, 2500);
 
     return () => clearInterval(interval);
   }, []);
