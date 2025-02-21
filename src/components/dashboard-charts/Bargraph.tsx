@@ -12,7 +12,7 @@ import {
   ChartOptions,
   TooltipItem
 } from 'chart.js';
-import { fetchAssignments } from '../utils/api';
+import { fetchAssignments } from '@/utils/api';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 

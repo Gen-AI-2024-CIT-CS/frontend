@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { fetchAssignments } from '../utils/api';
+import { fetchAssignments } from '@/utils/api';
 import {
   Chart as ChartJS,
   CategoryScale,
