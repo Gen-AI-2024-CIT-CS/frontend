@@ -59,5 +59,16 @@ export const saveCoursesEnrolled = async (formData: FormData,courseID:string) =>
     body: formData,
   });
 }
+export const fetchEnrollmentStats = async (courseID?: string, dept?: string) => {
+  const params = new URLSearchParams();
+  if (courseID) params.append('course_id', courseID);
+  if (dept) params.append('dept', dept);
+  
+  return await fetch(`http://localhost:3001/api/coursesDisplayRouter/course-counts?${params.toString()}`)
+    .then(res => {
+      if (!res.ok) throw new Error('Failed to fetch enrollment stats');
+      return res.json();
+    });
+};
 
 export default api;

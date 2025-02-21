@@ -12,6 +12,7 @@ import SaveAssignments from "@/components/SaveAssignments";
 import GrafanaEmbed from '@/components/GrafanaEmbed';
 import Student from "@/components/Student";
 import AverageAssignment from "@/components/AverageAssignment";
+import EnrollmentBarChart from "@/components/CoursesDashboard";
 import StudentEngagementTracker from "@/components/StudentEngagementTracker";
 
 const departments = [
@@ -256,6 +257,7 @@ const Dashboard: React.FC = () => {
           <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]"><StudentEngagementTracker dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-2"><Bargraph dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
           <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2"><CompletionTrendsChart dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
+          <div className="bg-[#dedada] rounded-md text-center col-span-4"><EnrollmentBarChart dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
         </div>        
       </div>
     </div>
