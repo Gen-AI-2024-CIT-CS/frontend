@@ -15,7 +15,7 @@ const Dashboard: React.FC = () => {
   const [showMessage, setShowMessage] = useState(false);
   const router = useRouter();
   const [mentors, setMentors] = useState<Mentor[]>([]);
-  const [selectedMentor, setSelectedMentor] = useState<string>("all");
+  const [selectedMentor, setSelectedMentor] = useState<string | null>(null);
   const [showFilterDropdown, setShowFilterDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -114,7 +114,7 @@ const Dashboard: React.FC = () => {
               className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md
                 shadow-[1px_2px_4px_rgba(0,0,0,0.5)] transition hover:bg-[#880010]"
             >
-              <span>{selectedMentor === "all" ? "All Mentors" : selectedMentor}</span>
+              <span>{selectedMentor || "Please select a mentor"}</span>
               <span>{showFilterDropdown ? "🡹" : "🡻"}</span>
             </button>
             
@@ -130,13 +130,6 @@ const Dashboard: React.FC = () => {
                   />
                 </div>
                 <ul className="max-h-60 overflow-y-auto">
-                  <li
-                    className={`px-4 py-2 hover:bg-gray-100 cursor-pointer text-black
-                      ${selectedMentor === "all" ? "bg-blue-100" : ""}`}
-                    onClick={() => handleMentorSelect("all")}
-                  >
-                    All Mentors
-                  </li>
                   {filteredMentors.map(mentor => (
                     <li
                       key={mentor.name}
@@ -174,7 +167,16 @@ const Dashboard: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 min-w-0">
-        <MenteeList selectedMentor={selectedMentor} />
+        {selectedMentor ? (
+          <MenteeList selectedMentor={selectedMentor} />
+        ) : (
+          <div className="flex h-full items-center justify-center p-8">
+            <div className="text-center bg-white p-8 rounded-lg shadow-md max-w-lg">
+              <h2 className="text-2xl font-bold text-gray-800 mb-4">Welcome to the Dashboard</h2>
+              <p className="text-gray-600 mb-6">Please select a mentor from the sidebar to view their mentees.</p>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Mobile menu button */}

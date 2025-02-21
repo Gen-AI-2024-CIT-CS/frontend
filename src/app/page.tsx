@@ -2,10 +2,6 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
-
-const UserList = dynamic(() => import("../components/UserList"), { ssr: false });
-const Login = dynamic(() => import("../components/Login"), { ssr: false });
 
 const HomePage = () => {
   const router = useRouter();
@@ -77,12 +73,6 @@ const HomePage = () => {
         >
           Get Started
         </button>
-      </div>
-
-      {/* Hidden components */}
-      <div className="hidden">
-        <Login />
-        <UserList />
       </div>
     </main>
   );
