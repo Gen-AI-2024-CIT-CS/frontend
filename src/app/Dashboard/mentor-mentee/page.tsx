@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { logout } from "../../../utils/api";
-import MenteeList from "../../../components/MenteeList";
+import { logout } from "@/utils/api";
+import MenteeList from "@/components/students/MenteeList";
 
 interface Mentor {
   name: string;

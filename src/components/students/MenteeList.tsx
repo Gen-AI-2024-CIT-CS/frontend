@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import MentorBarGraph from "./MentorBarGraph";
+import MentorBarGraph from "@/components/mentor-charts/MentorBarGraph";
 
 interface Mentee {
   name: string;

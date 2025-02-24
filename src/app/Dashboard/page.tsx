@@ -2,18 +2,18 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { fetchCourses, logout } from '../../utils/api';
-import Bargraph from '@/components/Bargraph';
-import CompletionTrendsChart from "@/components/LineGraph";
-import RegisteredStudents from '@/components/RegisteredStudents';
-import FileUploadButton from "@/components/FileUpload";
+import Bargraph from '@/components/dashboard-charts/Bargraph';
+import CompletionTrendsChart from "@/components/dashboard-charts/LineGraph";
+import RegisteredStudents from '@/components/dashboard-charts/RegisteredStudents';
+import FileUploadButton from "@/components/uploads/FileUpload";
 import { saveAssignment, saveStudents, saveCoursesEnrolled } from "../../utils/api";
-import ExamRegistered from '@/components/ExamRegisteredStudent';
-import SaveAssignments from "@/components/SaveAssignments";
-import GrafanaEmbed from '@/components/GrafanaEmbed';
-import Student from "@/components/Student";
-import AverageAssignment from "@/components/AverageAssignment";
-import EnrollmentBarChart from "@/components/CoursesDashboard";
-import StudentEngagementTracker from "@/components/StudentEngagementTracker";
+import ExamRegistered from '@/components/dashboard-charts/ExamRegisteredStudent';
+import SaveAssignments from "@/components/uploads/SaveAssignments";
+import GrafanaEmbed from '@/components/common/GrafanaEmbed';
+import Student from "@/components/students/Student";
+import AverageAssignment from "@/components/dashboard-charts/AverageAssignment";
+import EnrollmentBarChart from "@/components/dashboard-charts/CoursesDashboard";
+import StudentEngagementTracker from "@/components/dashboard-charts/StudentEngagementTracker";
 
 const departments = [
   { short: "All Departments", full: "" },
