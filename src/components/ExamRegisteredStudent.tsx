@@ -38,8 +38,11 @@ const ExamRegistered: React.FC<ExamRegisteredProps> = (props) => {
           setCourseEnrolled(filteredCourse.length);
           setExamRegisteredCount(filteredStudents.length);
         }else{
+          const filteredStudents = registeredStudents.filter(
+            (student: any) => student.status === "payment_complete"
+          );
           setCourseEnrolled(courseRegistered.length);
-          setExamRegisteredCount(registeredStudents.length);
+          setExamRegisteredCount(filteredStudents.length);
         }
       } catch (error) {
         console.error("Failed to fetch students", error);
