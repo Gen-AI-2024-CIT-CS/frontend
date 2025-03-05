@@ -99,12 +99,16 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
         // Calculate completed and not completed for each week
         const completed: number[] = [];
         const notCompleted: number[] = [];
-
-        for (let i = 1; i <= 12; i++) {
+        const iteration = Math.max(...filteredAssignments.map((assignment: any) => {
+          const assignmentKeys = Object.keys(assignment).filter(key => key.startsWith('assignment'));
+            return assignmentKeys.findIndex(key => assignment[key] === '-1.00');
+        }));
+        
+        for (let i = 0; i <= iteration; i++) {
           const weekLabel = `assignment${i}`;
           
           const completedCount = filteredAssignments.filter(
-            (assignment: any) => parseFloat(assignment[weekLabel]) > 0
+            (assignment: any) => parseFloat(assignment[weekLabel]) > 0 || assignment[weekLabel] === -1
           ).length;
           
           const notCompletedCount = filteredAssignments.length - completedCount;
@@ -115,7 +119,7 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
 
         // Set data for the bar chart
         setChartData({
-          labels: Array.from({ length: 12 }, (_, i) => `Week ${i + 1}`),
+          labels: Array.from({ length: iteration }, (_, i) => `Week ${i}`),
           datasets: [
             {
               label: 'Completed',

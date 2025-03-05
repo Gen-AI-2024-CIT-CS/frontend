@@ -45,29 +45,35 @@ interface AssignmentData {
 
 const CompletionTrendsChart: React.FC<CompletionTrendsChartProps> = (props) => {
   const [assignmentData, setAssignments] = useState<AssignmentData[]>([]);
-  
+  const [iteration, setIteration] = useState(0);
+
   useEffect(() => {
     const getAssignments = async () => {
       try {
         const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
-        setAssignments(assignments);
         var filteredAssignments = assignments;
-        if(props.dept && props.courseId){
+        if (props.dept && props.courseId) {
           filteredAssignments = assignments.filter(
             (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId
           );
-        }else if(props.dept && !props.courseId){
+        } else if (props.dept && !props.courseId) {
           filteredAssignments = assignments.filter(
             (assignment: any) => assignment.dept === props.dept
           );
-        }else if(!props.dept && props.courseId){
+        } else if (!props.dept && props.courseId) {
           filteredAssignments = assignments.filter(
             (assignment: any) => assignment.courseid === props.courseId
           );
-        }else{
+        } else {
           filteredAssignments = assignments;
         }
         setAssignments(filteredAssignments);
+
+        const limit = Math.max(...filteredAssignments.map((assignment: any) => {
+          const assignmentKeys = Object.keys(assignment).filter(key => key.startsWith('assignment'));
+          return assignmentKeys.findIndex(key => assignment[key] === '-1.00');
+        }));
+        setIteration(limit);
       } catch (error) {
         console.error("Failed to fetch assignments", error);
       }
@@ -77,24 +83,22 @@ const CompletionTrendsChart: React.FC<CompletionTrendsChartProps> = (props) => {
   }, [props.courseId, props.dept]);
 
   const processData = () => {
-    // Initialize array for weeks 1-12 (12 elements instead of 13)
     const assignmentCounts = Array(12).fill({ completed: 0, incomplete: 0 }).map(() => ({
       completed: 0,
       incomplete: 0
     }));
 
     assignmentData.forEach(student => {
-      // Start from assignment1 (index 1) and go up to assignment12
-      for (let i = 1; i <= 12; i++) {
-        const score = student[`assignment${i}`] ? parseFloat(student[`assignment${i}`] as string) : null;
+      for (let i = 1; i <= iteration; i++) {
+        const score = student[`assignment${i-1}`] ? parseFloat(student[`assignment${i-1}`] as string) : null;
         if (score === null) {
-          assignmentCounts[i-1].incomplete++;
+          assignmentCounts[i - 1].incomplete++;
           continue;
         }
         if (score > 0) {
-          assignmentCounts[i-1].completed++;
+          assignmentCounts[i - 1].completed++;
         } else {
-          assignmentCounts[i-1].incomplete++;
+          assignmentCounts[i - 1].incomplete++;
         }
       }
     });
@@ -102,12 +106,11 @@ const CompletionTrendsChart: React.FC<CompletionTrendsChartProps> = (props) => {
     return assignmentCounts;
   };
 
-  const assignmentCounts = processData();
+  const assignmentCounts = iteration > 0 ? processData() : [];
 
   const chartData = {
-    // Create labels for weeks 1-12 only
-    labels: Array(12).fill(null).map((_, i) => `Week ${i + 1}`),
-    datasets: [
+    labels: iteration > 0 ? Array(iteration).fill(null).map((_, i) => `Week ${i}`) : [],
+    datasets: iteration > 0 ? [
       {
         label: 'Completed',
         data: assignmentCounts.map(count => count.completed),
@@ -122,7 +125,7 @@ const CompletionTrendsChart: React.FC<CompletionTrendsChartProps> = (props) => {
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
         tension: 0.3
       }
-    ]
+    ] : []
   };
 
   const options = {
