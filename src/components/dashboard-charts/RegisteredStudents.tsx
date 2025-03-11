@@ -33,6 +33,7 @@ const RegisteredStudents: React.FC<ExamRegisteredProps> = (props) => {
             (student: any) => student.course_id === props.courseID && student.dept === props.dept
           );
           setTotalStudents(filteredStudents.length);
+          console.log(filteredStudents);
         }else if(props.courseID && !props.dept){
             const filteredStudents = registeredStudents.filter(
                 (student: any) => student.course_id === props.courseID

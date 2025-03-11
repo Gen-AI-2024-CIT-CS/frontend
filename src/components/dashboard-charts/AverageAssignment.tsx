@@ -46,6 +46,7 @@ export default function AverageAssignment(props: AverageAssignmentProps) {
             try {
                 const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
                 var filteredAssignments = assignments;
+                // console.log(assignments)
                 if(props.dept && props.courseId){
                     filteredAssignments = assignments.filter(
                         (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId

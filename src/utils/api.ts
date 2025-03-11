@@ -47,6 +47,16 @@ export const saveAssignment = async (formData: FormData,courseID: string) => {
     credentials:'include'
   });
 };
+export const saveAllAssignment = async (formData: FormData,courseID: string) => {
+  return fetch("http://localhost:3001/api/uploadAssignments/all", {
+    method: "POST",
+    body: formData,
+    headers: {
+      'courseID': courseID
+    },
+    credentials:'include'
+  });
+};
 export const saveStudents = async (formData: FormData,courseID:string) => {
   return fetch("http://localhost:3001/api/uploadStudents", {
     method: "POST",

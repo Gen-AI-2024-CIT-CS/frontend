@@ -95,14 +95,19 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
         }else{
           filteredAssignments = assignments;
         }
-        console.log(filteredAssignments);
+        // console.log(filteredAssignments);
+        // filteredAssignments.forEach((element: AssignmentData) => {
+        //   console.log(element.name);
+        // });
         // Calculate completed and not completed for each week
         const completed: number[] = [];
         const notCompleted: number[] = [];
+
+        const assignmentKeys = Object.keys(filteredAssignments[0]).filter(key => key.startsWith('assignment'));
         const iteration = Math.max(...filteredAssignments.map((assignment: any) => {
-          const assignmentKeys = Object.keys(assignment).filter(key => key.startsWith('assignment'));
-            return assignmentKeys.findIndex(key => assignment[key] === '-1.00');
+          return assignmentKeys.findIndex(key => assignment[key] === '-1.00' || assignment[key] === null);
         }));
+
         
         for (let i = 0; i <= iteration; i++) {
           const weekLabel = `assignment${i}`;

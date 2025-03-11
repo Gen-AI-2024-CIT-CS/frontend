@@ -12,6 +12,7 @@ import SaveAssignments from "@/components/uploads/SaveAssignments";
 import GrafanaEmbed from '@/components/common/GrafanaEmbed';
 import Student from "@/components/students/Student";
 import AverageAssignment from "@/components/dashboard-charts/AverageAssignment";
+import { saveAllAssignment } from "../../utils/api";
 import EnrollmentBarChart from "@/components/dashboard-charts/CoursesDashboard";
 import StudentEngagementTracker from "@/components/dashboard-charts/StudentEngagementTracker";
 
@@ -235,6 +236,7 @@ const Dashboard: React.FC = () => {
             />
             <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered" courseID=""/>
             <FileUploadButton apiCall={saveStudents} buttonText="Upload Students" courseID=""/>
+            <FileUploadButton apiCall={saveAllAssignment} buttonText="Upload All Assignments" courseID=""/>
             <SaveAssignments apiCall={saveAssignment}/>
           </>
           </nav>

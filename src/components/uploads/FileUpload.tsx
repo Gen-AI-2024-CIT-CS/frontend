@@ -26,7 +26,11 @@ export default function FileUploadButton({ apiCall,buttonText,courseID }: FileUp
 
         if (response.status === 200) {
           setUploadStatus("File uploaded successfully!");
-        } else {
+        } else if(response.status === 400){
+          setUploadStatus("Invalid Data");
+          const responseData = await response.json();
+          console.log(responseData.invalidRecords);
+        }else {
           setUploadStatus("Failed to upload file.");
         }
       } catch (error) {
