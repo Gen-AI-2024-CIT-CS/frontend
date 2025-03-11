@@ -12,7 +12,6 @@ import SaveAssignments from "@/components/uploads/SaveAssignments";
 import GrafanaEmbed from '@/components/common/GrafanaEmbed';
 import Student from "@/components/students/Student";
 import AverageAssignment from "@/components/dashboard-charts/AverageAssignment";
-import { saveAllAssignment } from "../../utils/api";
 import EnrollmentBarChart from "@/components/dashboard-charts/CoursesDashboard";
 import StudentEngagementTracker from "@/components/dashboard-charts/StudentEngagementTracker";
 
@@ -32,6 +31,14 @@ const departments = [
   { short: "CSBS", full: "Computer Science and Business Systems" },
 ];
 
+// Year selections
+const years = [
+  { year: "Select Year", value: "" },
+  { year: "1st Year", value: "1" },
+  { year: "2nd Year", value: "2" },
+  { year: "3rd Year", value: "3" },
+];
+
 interface course{
   course_name:string;
   course_id:string;
@@ -42,6 +49,7 @@ const Dashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState({ short: "Select Department", full: "" });
   const [selectedCourse, setSelectedCourse] = useState({ course_name: "Select Course", course_id: "" });
+  const [selectedYear, setSelectedYear] = useState({ year: "Select Year", value: "" });
   const [userRole, setUserRole] = useState<string | null>(null);
   const [showMessage, setShowMessage] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -120,12 +128,21 @@ const Dashboard: React.FC = () => {
     setOpenDropdown(null);
   };
 
+  const handleSelectYear = (year: { year: string; value: string }) => {
+    setSelectedYear(year);
+    setOpenDropdown(null);
+  };
+
   const filteredDepartments = departments.filter(dept =>
     dept.short.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const filteredCourses = courses.filter(course =>
     course.course_name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const filteredYears = years.filter(year =>
+    year.year.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -166,6 +183,37 @@ const Dashboard: React.FC = () => {
                     <li key={dept.short}>
                       <button className="w-full text-left hover:bg-[#990011] p-2 rounded-md" onClick={() => handleSelectDepartment(dept)}>
                         {dept.short}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Year Dropdown (New Addition) */}
+            <div className="relative">
+              <button className="w-full text-left flex justify-between items-center bg-[#990011] p-2 rounded-md shadow-md transition transform duration-200 hover:scale-95 outline-none" onClick={() => toggleDropdown('year')}>
+                {selectedYear.year}
+                <span>{openDropdown === 'year' ? "🡹" : "🡻"}</span>
+              </button>
+              <div className={`transition-all duration-300 ease-in-out overflow-hidden ${openDropdown === 'year' ? "max-h-60" : "max-h-0"}`}>
+                <input
+                  type="text"
+                  placeholder="Search Year..."
+                  className="w-full p-2 rounded-md mb-2 text-black outline-none"
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const foundYear = filteredYears[0];
+                      if (foundYear) handleSelectYear(foundYear);
+                    }
+                  }}
+                />
+                <ul className="mt-2 space-y-1 bg-[#77000e] p-2 rounded-lg max-h-40 overflow-y-auto">
+                  {filteredYears.map((year) => (
+                    <li key={year.value}>
+                      <button className="w-full text-left hover:bg-[#990011] p-2 rounded-md" onClick={() => handleSelectYear(year)}>
+                        {year.year}
                       </button>
                     </li>
                   ))}
@@ -236,7 +284,6 @@ const Dashboard: React.FC = () => {
             />
             <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered" courseID=""/>
             <FileUploadButton apiCall={saveStudents} buttonText="Upload Students" courseID=""/>
-            <FileUploadButton apiCall={saveAllAssignment} buttonText="Upload All Assignments" courseID=""/>
             <SaveAssignments apiCall={saveAssignment}/>
           </>
           </nav>
