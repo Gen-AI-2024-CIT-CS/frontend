@@ -22,6 +22,7 @@ ChartJS.register(
 interface EnrollmentBarChartProps {
   courseId?: string;
   dept?: string;
+  year:string;
 }
 
 interface EnrollmentStats {
@@ -48,7 +49,9 @@ const EnrollmentBarChart: React.FC<EnrollmentBarChartProps> = (props) => {
       const getEnrollmentStats = async () => {
         setLoading(true);
         try {
-          const data = await fetchEnrollmentStats(props.courseId, props.dept);
+          // Update to pass year parameter to fetchEnrollmentStats
+          const data = await fetchEnrollmentStats(props.courseId, props.dept,props.year);
+          console.log(data);
           if (isMounted) {
             setAllStats(Array.isArray(data) ? data : [data]);
             setError(null);
@@ -65,6 +68,7 @@ const EnrollmentBarChart: React.FC<EnrollmentBarChartProps> = (props) => {
           }
         }
       };
+  
 
       getEnrollmentStats();
     }, 300); // 300ms debounce
@@ -73,7 +77,7 @@ const EnrollmentBarChart: React.FC<EnrollmentBarChartProps> = (props) => {
       isMounted = false;
       clearTimeout(timeoutId);
     };
-  }, [props.dept, props.courseId]);
+  }, [props.dept, props.courseId, props.year]);
   
   // Memoize sorted stats to prevent unnecessary recalculations
   const sortedStats = useMemo(() => {

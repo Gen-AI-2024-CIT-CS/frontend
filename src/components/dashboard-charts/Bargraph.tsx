@@ -19,6 +19,7 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 interface AssignmentsGraph {
   dept: string;
   courseId: string;
+  year:string;
 }
 
 interface AssignmentData {
@@ -30,6 +31,7 @@ interface AssignmentData {
   email: string;
   name: string;
   roll_no: string;
+  year: string;
 }
 
 const BarGraph: React.FC<AssignmentsGraph> = (props) => {
@@ -80,28 +82,77 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
         const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
         setAssignments(assignments);
         var filteredAssignments = assignments;
-        if(props.dept && props.courseId){
+        // console.log(assignments);
+        
+        // Filter assignments based on provided parameters
+        if(props.dept && props.courseId && props.year) {
           filteredAssignments = assignments.filter(
-            (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId
+            (assignment: any) => 
+              assignment.dept === props.dept && 
+              assignment.courseid === props.courseId &&
+              assignment.year != null && assignment.year.toString() === props.year.toString()
           );
-        }else if(props.dept && !props.courseId){
+        } else if(props.dept && props.courseId) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => 
+              assignment.dept === props.dept && 
+              assignment.courseid === props.courseId
+          );
+        } else if(props.dept && props.year) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => 
+              assignment.dept === props.dept &&
+              assignment.year != null && assignment.year.toString() === props.year.toString()
+          );
+        } else if(props.courseId && props.year) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => 
+              assignment.courseid === props.courseId &&
+              assignment.year != null && assignment.year.toString() === props.year.toString()
+          );
+        } else if(props.dept) {
           filteredAssignments = assignments.filter(
             (assignment: any) => assignment.dept === props.dept
           );
-        }else if(!props.dept && props.courseId){
+        } else if(props.courseId) {
           filteredAssignments = assignments.filter(
             (assignment: any) => assignment.courseid === props.courseId
           );
-        }else{
+        } else if(props.year) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => {
+              return assignment.year != null && assignment.year.toString() === props.year.toString();
+            }
+          );
+        } else {
           filteredAssignments = assignments;
         }
-        // console.log(filteredAssignments);
-        // filteredAssignments.forEach((element: AssignmentData) => {
-        //   console.log(element.name);
-        // });
+        // console.log(filteredAssignments)
+        
         // Calculate completed and not completed for each week
         const completed: number[] = [];
         const notCompleted: number[] = [];
+
+        // Check if filteredAssignments has at least one item
+        if (filteredAssignments.length === 0) {
+          // Handle the case where no assignments match the filter criteria
+          setChartData({
+            labels: ['No Data'],
+            datasets: [
+              {
+                label: 'Completed',
+                data: [0],
+                backgroundColor: 'rgba(255, 99, 0, 0.5)',
+              },
+              {
+                label: 'Not Completed',
+                data: [0],
+                backgroundColor: 'rgba(53, 162, 235, 0.5)',
+              },
+            ],
+          });
+          return;
+        }
 
         const assignmentKeys = Object.keys(filteredAssignments[0]).filter(key => key.startsWith('assignment'));
         const iteration = Math.max(...filteredAssignments.map((assignment: any) => {
@@ -144,7 +195,7 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
     };
 
     getAssignments();
-  }, [props.dept,props.courseId]);
+  }, [props.dept,props.courseId,props.year]);
 
   return (
     <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto' }}>

@@ -30,6 +30,7 @@ interface StudentData {
 interface CompletionTrendsChartProps {
   dept: string;
   courseId: string;
+  year: string;
 }
 
 interface AssignmentData {
@@ -52,17 +53,44 @@ const CompletionTrendsChart: React.FC<CompletionTrendsChartProps> = (props) => {
       try {
         const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
         var filteredAssignments = assignments;
-        if (props.dept && props.courseId) {
+        if (props.dept && props.courseId && props.year) {
           filteredAssignments = assignments.filter(
-            (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId
+            (assignment: any) => 
+              assignment.dept === props.dept && 
+              assignment.courseid === props.courseId &&
+              assignment.year != null && assignment.year.toString() === props.year.toString()
           );
-        } else if (props.dept && !props.courseId) {
+        } else if (props.dept && props.courseId) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => 
+              assignment.dept === props.dept && 
+              assignment.courseid === props.courseId
+          );
+        } else if (props.dept && props.year) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => 
+              assignment.dept === props.dept &&
+              assignment.year != null && assignment.year.toString() === props.year.toString()
+          );
+        } else if (props.courseId && props.year) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => 
+              assignment.courseid === props.courseId &&
+              assignment.year != null && assignment.year.toString() === props.year.toString()
+          );
+        } else if (props.dept) {
           filteredAssignments = assignments.filter(
             (assignment: any) => assignment.dept === props.dept
           );
-        } else if (!props.dept && props.courseId) {
+        } else if (props.courseId) {
           filteredAssignments = assignments.filter(
             (assignment: any) => assignment.courseid === props.courseId
+          );
+        } else if (props.year) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => {
+              return assignment.year != null && assignment.year.toString() === props.year.toString();
+            }
           );
         } else {
           filteredAssignments = assignments;
@@ -80,7 +108,7 @@ const CompletionTrendsChart: React.FC<CompletionTrendsChartProps> = (props) => {
     };
 
     getAssignments();
-  }, [props.courseId, props.dept]);
+  }, [props.courseId, props.dept, props.year]);
 
   const processData = () => {
     const assignmentCounts = Array(12).fill({ completed: 0, incomplete: 0 }).map(() => ({

@@ -17,6 +17,7 @@ ChartJS.register(
 interface ExamRegisteredProps {
   courseID: string;
   dept: string;
+  year:string;
 }
 
 const ExamRegistered: React.FC<ExamRegisteredProps> = (props) => {
@@ -28,20 +29,83 @@ const ExamRegistered: React.FC<ExamRegisteredProps> = (props) => {
       try {
         const { data: registeredStudents } = await fetchStudentsRegistered(props.dept);
         const { data: courseRegistered } = await fetchStudentsRegistered(props.dept);
-        if(props.courseID){
-          const filteredStudents = registeredStudents.filter(
-            (student: any) => student.course_id === props.courseID && student.status === "payment_complete"
+        
+        // Filter course enrolled students
+        if (props.courseID && props.dept && props.year) {
+          const filteredCourse = courseRegistered.filter(
+            (student: any) => 
+              student.course_id === props.courseID && 
+              student.dept === props.dept &&
+              student.year != null && student.year.toString() === props.year.toString()
           );
+          setCourseEnrolled(filteredCourse.length);
+        } else if (props.courseID && props.dept) {
+          const filteredCourse = courseRegistered.filter(
+            (student: any) => 
+              student.course_id === props.courseID && 
+              student.dept === props.dept
+          );
+          setCourseEnrolled(filteredCourse.length);
+        } else if (props.courseID && props.year) {
+          const filteredCourse = courseRegistered.filter(
+            (student: any) => 
+              student.course_id === props.courseID &&
+              student.year != null && student.year.toString() === props.year.toString()
+          );
+          setCourseEnrolled(filteredCourse.length);
+        } else if (props.dept && props.year) {
+          const filteredCourse = courseRegistered.filter(
+            (student: any) => 
+              student.dept === props.dept &&
+              student.year != null && student.year.toString() === props.year.toString()
+          );
+          setCourseEnrolled(filteredCourse.length);
+        } else if (props.courseID) {
           const filteredCourse = courseRegistered.filter(
             (student: any) => student.course_id === props.courseID
           );
           setCourseEnrolled(filteredCourse.length);
+        } else if (props.dept) {
+          const filteredCourse = courseRegistered.filter(
+            (student: any) => student.dept === props.dept
+          );
+          setCourseEnrolled(filteredCourse.length);
+        } else if (props.year) {
+          const filteredCourse = courseRegistered.filter(
+            (student: any) => student.year != null && student.year.toString() === props.year.toString()
+          );
+          setCourseEnrolled(filteredCourse.length);
+        } else {
+          setCourseEnrolled(courseRegistered.length);
+        }
+        
+        // Filter exam registered students
+        if (props.courseID && props.year) {
+          const filteredStudents = registeredStudents.filter(
+            (student: any) => 
+              student.course_id === props.courseID && 
+              student.status === "payment_complete" &&
+              student.year != null && student.year.toString() === props.year.toString()
+          );
           setExamRegisteredCount(filteredStudents.length);
-        }else{
+        } else if (props.courseID) {
+          const filteredStudents = registeredStudents.filter(
+            (student: any) => 
+              student.course_id === props.courseID && 
+              student.status === "payment_complete"
+          );
+          setExamRegisteredCount(filteredStudents.length);
+        } else if (props.year) {
+          const filteredStudents = registeredStudents.filter(
+            (student: any) => 
+              student.status === "payment_complete" &&
+              student.year != null && student.year.toString() === props.year.toString()
+          );
+          setExamRegisteredCount(filteredStudents.length);
+        } else {
           const filteredStudents = registeredStudents.filter(
             (student: any) => student.status === "payment_complete"
           );
-          setCourseEnrolled(courseRegistered.length);
           setExamRegisteredCount(filteredStudents.length);
         }
       } catch (error) {
@@ -50,7 +114,7 @@ const ExamRegistered: React.FC<ExamRegisteredProps> = (props) => {
     };
 
     getRegisteredStudents();
-  }, [props.dept, props.courseID]);
+  }, [props.dept, props.courseID, props.year]);
 
   const data = {
     labels: ['Registered', 'Not Registered'],

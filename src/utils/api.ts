@@ -69,7 +69,7 @@ export const saveCoursesEnrolled = async (formData: FormData,courseID:string) =>
     body: formData,
   });
 }
-export const fetchEnrollmentStats = async (courseID?: string, dept?: string) => {
+export const fetchEnrollmentStats = async (courseID?: string, dept?: string,year?: string) => {
   const params = new URLSearchParams();
   if (courseID) params.append('course_id', courseID);
   if (dept) params.append('dept', dept);

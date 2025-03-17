@@ -5,9 +5,10 @@ import { fetchStudentsRegistered, fetchAssignments } from "@/utils/api";
 interface StudentEngagementTrackerProps {
   dept: string;
   courseId: string;
+  year: string;
 }
 
-const StudentEngagementTracker = ({ dept, courseId }: StudentEngagementTrackerProps) => {
+const StudentEngagementTracker = ({ dept, courseId, year }: StudentEngagementTrackerProps) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [engagementData, setEngagementData] = useState([
     { metric: 'Course Enrollment', value: 0, fullMark: 100 },
@@ -67,17 +68,44 @@ const StudentEngagementTracker = ({ dept, courseId }: StudentEngagementTrackerPr
         const { data: assignments } = await fetchAssignments(dept, courseId);
         let filteredAssignments = assignments;
         
-        if (dept && courseId) {
+        if (dept && courseId && year) {
           filteredAssignments = assignments.filter(
-            (assignment: any) => assignment.dept === dept && assignment.courseid === courseId
+            (assignment: any) => 
+              assignment.dept === dept && 
+              assignment.courseid === courseId &&
+              assignment.year != null && assignment.year.toString() === year.toString()
           );
-        } else if (dept && !courseId) {
+        } else if (dept && courseId) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => 
+              assignment.dept === dept && 
+              assignment.courseid === courseId
+          );
+        } else if (dept && year) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => 
+              assignment.dept === dept &&
+              assignment.year != null && assignment.year.toString() === year.toString()
+          );
+        } else if (courseId && year) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => 
+              assignment.courseid === courseId &&
+              assignment.year != null && assignment.year.toString() === year.toString()
+          );
+        } else if (dept) {
           filteredAssignments = assignments.filter(
             (assignment: any) => assignment.dept === dept
           );
-        } else if (!dept && courseId) {
+        } else if (courseId) {
           filteredAssignments = assignments.filter(
             (assignment: any) => assignment.courseid === courseId
+          );
+        } else if (year) {
+          filteredAssignments = assignments.filter(
+            (assignment: any) => {
+              return assignment.year != null && assignment.year.toString() === year.toString();
+            }
           );
         }
         
@@ -87,7 +115,7 @@ const StudentEngagementTracker = ({ dept, courseId }: StudentEngagementTrackerPr
         // Calculate enrollment percentage
         const enrollmentPercentage = totalStudents > 0 ? (enrolledStudents / totalStudents) * 100 : 0;
         
-        // Calculate exam registration percentage
+        // Calculate exam registration percentagerops.year]);
         const examRegistrationPercentage = enrolledStudents > 0 ? (examRegisteredCount / enrolledStudents) * 100 : 0;
         
 
@@ -114,7 +142,7 @@ const StudentEngagementTracker = ({ dept, courseId }: StudentEngagementTrackerPr
     };
 
     fetchAllMetrics();
-  }, [dept, courseId]);
+  }, [dept, courseId, year]);
 
   // Helper function to calculate average assignment score
   const calculateAverageScore = (assignments: any[]) => {

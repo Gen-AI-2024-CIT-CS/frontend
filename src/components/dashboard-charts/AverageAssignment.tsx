@@ -18,6 +18,7 @@ ChartJS.register(
 interface AverageAssignmentProps {
     dept: string;
     courseId: string;
+    year: string;
 }
 
 export default function AverageAssignment(props: AverageAssignmentProps) {
@@ -47,21 +48,49 @@ export default function AverageAssignment(props: AverageAssignmentProps) {
                 const { data: assignments } = await fetchAssignments(props.dept, props.courseId);
                 var filteredAssignments = assignments;
                 // console.log(assignments)
-                if(props.dept && props.courseId){
+                if(props.dept && props.courseId && props.year) {
                     filteredAssignments = assignments.filter(
-                        (assignment: any) => assignment.dept === props.dept && assignment.courseid === props.courseId
+                        (assignment: any) => 
+                            assignment.dept === props.dept && 
+                            assignment.courseid === props.courseId &&
+                            assignment.year != null && assignment.year.toString() === props.year.toString()
                     );
-                }else if(props.dept && !props.courseId){
+                } else if(props.dept && props.courseId) {
+                    filteredAssignments = assignments.filter(
+                        (assignment: any) => 
+                            assignment.dept === props.dept && 
+                            assignment.courseid === props.courseId
+                    );
+                } else if(props.dept && props.year) {
+                    filteredAssignments = assignments.filter(
+                        (assignment: any) => 
+                            assignment.dept === props.dept &&
+                            assignment.year != null && assignment.year.toString() === props.year.toString()
+                    );
+                } else if(props.courseId && props.year) {
+                    filteredAssignments = assignments.filter(
+                        (assignment: any) => 
+                            assignment.courseid === props.courseId &&
+                            assignment.year != null && assignment.year.toString() === props.year.toString()
+                    );
+                } else if(props.dept) {
                     filteredAssignments = assignments.filter(
                         (assignment: any) => assignment.dept === props.dept
                     );
-                }else if(!props.dept && props.courseId){
+                } else if(props.courseId) {
                     filteredAssignments = assignments.filter(
                         (assignment: any) => assignment.courseid === props.courseId
                     );
-                }else{
+                } else if(props.year) {
+                    filteredAssignments = assignments.filter(
+                        (assignment: any) => {
+                            return assignment.year != null && assignment.year.toString() === props.year.toString();
+                        }
+                    );
+                } else {
                     filteredAssignments = assignments;
                 }
+                
                 const avg = calculateAverage(filteredAssignments);
                 setAverage(avg);
             } catch (error) {
@@ -69,7 +98,7 @@ export default function AverageAssignment(props: AverageAssignmentProps) {
             }
         };
         getAssignments();
-    }, [props.dept, props.courseId]);
+    }, [props.dept, props.courseId, props.year]);
 
     const data = {
         labels: ['Score', 'Remaining'],

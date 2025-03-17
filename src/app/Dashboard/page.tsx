@@ -6,7 +6,7 @@ import Bargraph from '@/components/dashboard-charts/Bargraph';
 import CompletionTrendsChart from "@/components/dashboard-charts/LineGraph";
 import RegisteredStudents from '@/components/dashboard-charts/RegisteredStudents';
 import FileUploadButton from "@/components/uploads/FileUpload";
-import { saveAssignment, saveStudents, saveCoursesEnrolled } from "../../utils/api";
+import { saveAssignment, saveStudents, saveCoursesEnrolled,saveAllAssignment } from "../../utils/api";
 import ExamRegistered from '@/components/dashboard-charts/ExamRegisteredStudent';
 import SaveAssignments from "@/components/uploads/SaveAssignments";
 import GrafanaEmbed from '@/components/common/GrafanaEmbed';
@@ -284,6 +284,7 @@ const Dashboard: React.FC = () => {
             />
             <FileUploadButton apiCall={saveCoursesEnrolled} buttonText="Upload Registered" courseID=""/>
             <FileUploadButton apiCall={saveStudents} buttonText="Upload Students" courseID=""/>
+            <FileUploadButton apiCall={saveAllAssignment} buttonText="Upload All Assignments" courseID=""/>
             <SaveAssignments apiCall={saveAssignment}/>
           </>
           </nav>
@@ -300,13 +301,55 @@ const Dashboard: React.FC = () => {
       <div className="w-full md:w-4/5 p-4 md:p-8" id="dashboard-container">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 p-4 rounded-md text-black">DASHBOARD</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]"><RegisteredStudents dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]"><ExamRegistered dept={selectedDepartment.full} courseID={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]"><AverageAssignment dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]"><StudentEngagementTracker dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-2"><Bargraph dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2"><CompletionTrendsChart dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
-          <div className="bg-[#dedada] rounded-md text-center col-span-4"><EnrollmentBarChart dept={selectedDepartment.full} courseId={selectedCourse.course_id}/></div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]">
+            <RegisteredStudents 
+              dept={selectedDepartment.full} 
+              courseID={selectedCourse.course_id}
+              year={selectedYear.value}
+            />
+          </div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]">
+            <ExamRegistered 
+              dept={selectedDepartment.full} 
+              courseID={selectedCourse.course_id}  
+              year={selectedYear.value}
+            />
+          </div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]">
+            <AverageAssignment 
+              dept={selectedDepartment.full} 
+              courseId={selectedCourse.course_id}  
+              year={selectedYear.value}
+            />
+          </div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center h-[20rem]">
+            <StudentEngagementTracker 
+              dept={selectedDepartment.full} 
+              courseId={selectedCourse.course_id}  
+              year={selectedYear.value}
+            />
+          </div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2 lg:col-span-2">
+            <Bargraph 
+              dept={selectedDepartment.full} 
+              courseId={selectedCourse.course_id} 
+              year={selectedYear.value}
+            />
+          </div>
+          <div className="bg-[#dedada] p-4 rounded-md text-center col-span-1 md:col-span-2">
+            <CompletionTrendsChart 
+              dept={selectedDepartment.full} 
+              courseId={selectedCourse.course_id}  
+              year={selectedYear.value}
+            />
+          </div>
+          <div className="bg-[#dedada] rounded-md text-center col-span-4">
+            <EnrollmentBarChart 
+              dept={selectedDepartment.full} 
+              courseId={selectedCourse.course_id}  
+              year={selectedYear.value}
+            />
+          </div>
         </div>        
       </div>
     </div>
