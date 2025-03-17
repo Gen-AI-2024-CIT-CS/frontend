@@ -104,6 +104,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleSmallChatboxAccess = () => {
+    if (userRole === "admin") {
+      router.push("/newchatbot");
+    } else {
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
+    }
+  };
+
   const handleChatboxAccess = () => {
     if (userRole === 'admin') {
       router.push('/chatbox');
@@ -271,6 +280,9 @@ const Dashboard: React.FC = () => {
             </div>
           )}
           <nav className="mt-6 space-y-2 mb-4 w-full max-w-md">
+            <button onClick={handleSmallChatboxAccess} className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95">
+              Small ChatBot
+            </button>
             <button onClick={handleChatboxAccess} className="block w-full px-3 py-2 text-center rounded-md hover:bg-[#660000] transition transform duration-200 hover:scale-95">
               ChatBot
             </button>

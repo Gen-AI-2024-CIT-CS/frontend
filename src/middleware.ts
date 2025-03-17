@@ -32,6 +32,14 @@ export async function middleware(req: NextRequest) {
       }
     }
 
+    // Small chatbox access: Only admin should access
+    if (path.startsWith('/newchatbot')) {
+      if (payload.role !== 'admin') {
+        console.log('Unauthorized access attempt to /small-chatbox. Redirecting to dashboard');
+        return NextResponse.redirect(dashboardUrl);
+      }
+    }
+
     // Dashboard access: Both admin and user can access
     if (path.startsWith('/dashboard')) {
       if (payload.role !== 'admin' && payload.role !== 'user') {
@@ -57,5 +65,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/dashboard/:path*', '/chatbox/:path*'],
+  matcher: ['/dashboard/:path*', '/chatbox/:path*', '/newchatbot/:path*'],
 };

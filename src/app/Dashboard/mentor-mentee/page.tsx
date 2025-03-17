@@ -72,6 +72,15 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const handleSmallChatboxAccess = () => {
+    if (userRole === "admin") {
+      router.push("/newchatbot");
+    } else {
+      setShowMessage(true);
+      setTimeout(() => setShowMessage(false), 3000);
+    }
+  };
+
   const handleMentorSelect = (mentorName: string) => {
     setSelectedMentor(mentorName);
     setShowFilterDropdown(false);
@@ -146,6 +155,14 @@ const Dashboard: React.FC = () => {
           </div>
 
           <div className="flex-grow" />
+
+          <button
+            onClick={handleSmallChatboxAccess}
+            className="w-full px-3 py-2 rounded-md hover:bg-[#660000] border-[1.5px] 
+              hover:border-0 transition"
+          >
+            Small Chatbot
+          </button>
 
           <button
             onClick={handleChatboxAccess}
