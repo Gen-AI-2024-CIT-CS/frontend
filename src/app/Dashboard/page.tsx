@@ -17,18 +17,18 @@ import StudentEngagementTracker from "@/components/dashboard-charts/StudentEngag
 
 const departments = [
   { short: "All Departments", full: "" },
+  { short: "MECH", full: "Mechanical Engineering" },
+  { short: "IT", full: "Information Technology" },
+  { short: "CSBS", full: "Computer Science and Business Systems" },
+  { short: "AIML", full: "Artificial Intelligence and Machine Learning" },
+  { short: "AIDS", full: "Artificial Intelligence and Data Science" },
+  { short: "BME", full: "Biomedical Engineering" },
   { short: "CS", full: "Cyber Security" },
   { short: "CSE", full: "Computer Science and Engineering" },
-  { short: "AIML", full: "Artificial Intelligence and Machine Learning" },
   { short: "ECE", full: "Electronics and Communication Engineering" },
-  { short: "BME", full: "Biomedical Engineering" },
   { short: "EEE", full: "Electrical and Electronics Engineering" },
   { short: "MCT", full: "Mechatronics" },
-  { short: "MECH", full: "Mechanical Engineering" },
   { short: "CE", full: "Civil Engineering" },
-  { short: "IT", full: "Information Technology" },
-  { short: "AIDS", full: "Artificial Intelligence and Data Science" },
-  { short: "CSBS", full: "Computer Science and Business Systems" },
 ];
 
 // Year selections
