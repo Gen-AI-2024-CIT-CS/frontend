@@ -10,6 +10,7 @@ import {
   Legend,
   ChartOptions,
 } from "chart.js";
+import { skip } from "node:test";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -38,6 +39,7 @@ interface StudentStats {
 }
 
 const DEPARTMENT_MAP: Record<string, string> = {
+  // Need to add more department codes here
   'AM': 'AIML',
   'CS': 'CSE',
   'CZ': 'CSE (CS)',
@@ -62,20 +64,21 @@ const MentorBarGraph: React.FC<MentorBarGraphProps> = ({ mentorName, mentees, as
   const [studentStats, setStudentStats] = useState<StudentStats | null>(null);
 
   const getDepartmentFromRollNo = (rollNo: string): string => {
-    const deptCode = rollNo.match(/\d{2}([A-Z]{2})/)?.[1] || "";
+    const deptCode = rollNo.match(/\d{2}([A-Za-z]{2})/)?.[1]?.toUpperCase() || "";
     return DEPARTMENT_MAP[deptCode] || deptCode;
   };
 
   const getRollNumberValue = (roll: string) => {
-    const match = roll.match(/(\d{2})(?:[A-Z]{2})(\d+)/);
-    return match ? { 
-      year: parseInt(match[1]), 
-      sequence: parseInt(match[2]) 
-    } : { 
-      year: 0, 
-      sequence: 0 
-    };
+      const match = roll.match(/(\d{2})(?:[A-Za-z]{2})(\d+)/);
+      return match ? { 
+          year: parseInt(match[1]), 
+          sequence: parseInt(match[2]) 
+      } : { 
+          year: 0, 
+          sequence: 0 
+      };
   };
+
 
   const sortedMentees = [...mentees].sort((a, b) => {
     const aValues = getRollNumberValue(a.roll_no);
@@ -90,8 +93,13 @@ const MentorBarGraph: React.FC<MentorBarGraphProps> = ({ mentorName, mentees, as
       const menteeEmails = new Set(mentees.map(m => m.email));
       const mentorAssignments = assignments.filter(a => menteeEmails.has(a.email));
 
-      const weeklyStats = Array.from({ length: 12 }, (_, i) => {
-        const weekLabel = `assignment${i + 1}`;
+      const assignmentKeys = Object.keys(mentorAssignments[0]).filter(key => key.startsWith('assignment'));
+      const iteration = Math.min(...mentorAssignments.map((assignment: any) => {
+        return assignmentKeys.findIndex(key => assignment[key] === '-1.00' || assignment[key] === null);
+      }));
+
+      const weeklyStats = Array.from({ length: iteration-1 }, (_, i) => {
+        const weekLabel = `assignment${i+1}`;
         const completedCount = mentorAssignments.filter(a => parseFloat(a[weekLabel]) > 0).length;
         return {
           completed: completedCount,
@@ -100,7 +108,7 @@ const MentorBarGraph: React.FC<MentorBarGraphProps> = ({ mentorName, mentees, as
       });
 
       setChartData({
-        labels: Array.from({ length: 12 }, (_, i) => `Week ${i + 1}`),
+        labels: Array.from({ length: iteration-1 }, (_, i) => `Week ${i+1}`),
         datasets: [
           {
             label: "Completed",
