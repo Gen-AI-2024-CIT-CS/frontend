@@ -101,7 +101,11 @@ const CompletionTrendsChart: React.FC<CompletionTrendsChartProps> = (props) => {
           const assignmentKeys = Object.keys(assignment).filter(key => key.startsWith('assignment'));
           return assignmentKeys.findIndex(key => assignment[key] === '-1.00' || assignment[key] === null);
         }));
-        setIteration(limit);
+        if(limit === Infinity) {
+          setIteration(filteredAssignments[0] ? Object.keys(filteredAssignments[0]).filter(key => key.startsWith('assignment')).length : 0);
+        } else {
+          setIteration(limit);
+        }
       } catch (error) {
         console.error("Failed to fetch assignments", error);
       }
@@ -153,7 +157,22 @@ const CompletionTrendsChart: React.FC<CompletionTrendsChartProps> = (props) => {
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
         tension: 0.3
       }
-    ] : []
+    ] : [
+      {
+        label: 'Completed',
+        data: [],
+        borderColor: 'rgb(75, 192, 192)',
+        backgroundColor: 'rgba(75, 192, 192, 0.5)',
+        tension: 0.3
+      },
+      {
+        label: 'Not Completed',
+        data: [],
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+        tension: 0.3
+      }
+    ]
   };
 
   const options = {
