@@ -97,7 +97,7 @@ const CompletionTrendsChart: React.FC<CompletionTrendsChartProps> = (props) => {
         }
         setAssignments(filteredAssignments);
 
-        const limit = Math.max(...filteredAssignments.map((assignment: any) => {
+        const limit = Math.min(...filteredAssignments.map((assignment: any) => {
           const assignmentKeys = Object.keys(assignment).filter(key => key.startsWith('assignment'));
           return assignmentKeys.findIndex(key => assignment[key] === '-1.00' || assignment[key] === null);
         }));

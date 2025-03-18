@@ -127,7 +127,7 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
         } else {
           filteredAssignments = assignments;
         }
-        // console.log(filteredAssignments)
+        console.log(filteredAssignments)
         
         // Calculate completed and not completed for each week
         const completed: number[] = [];
@@ -155,7 +155,7 @@ const BarGraph: React.FC<AssignmentsGraph> = (props) => {
         }
 
         const assignmentKeys = Object.keys(filteredAssignments[0]).filter(key => key.startsWith('assignment'));
-        const iteration = Math.max(...filteredAssignments.map((assignment: any) => {
+        const iteration = Math.min(...filteredAssignments.map((assignment: any) => {
           return assignmentKeys.findIndex(key => assignment[key] === '-1.00' || assignment[key] === null);
         }));
 

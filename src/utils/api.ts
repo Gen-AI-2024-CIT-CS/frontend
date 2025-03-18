@@ -74,6 +74,7 @@ export const fetchEnrollmentStats = async (courseID?: string, dept?: string,year
   const params = new URLSearchParams();
   if (courseID) params.append('course_id', courseID);
   if (dept) params.append('dept', dept);
+  if (year) params.append('year', year);
   
   return await fetch(`http://localhost:3001/api/coursesDisplayRouter/course-counts?${params.toString()}`)
     .then(res => {

@@ -51,7 +51,7 @@ const EnrollmentBarChart: React.FC<EnrollmentBarChartProps> = (props) => {
         try {
           // Update to pass year parameter to fetchEnrollmentStats
           const data = await fetchEnrollmentStats(props.courseId, props.dept,props.year);
-          console.log(data);
+          // console.log(data);
           if (isMounted) {
             setAllStats(Array.isArray(data) ? data : [data]);
             setError(null);
