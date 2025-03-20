@@ -2,27 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import RotatingText from '../components/react-bits/RotatingText';
 
 const HomePage = () => {
   const router = useRouter();
   const [currentWord, setCurrentWord] = useState("Automated");
   const [isAnimating, setIsAnimating] = useState(false);
-  const words = ["Automated", "Real-time", "Streamlined", "Integrated"];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsAnimating(true);
-      setTimeout(() => {
-        setCurrentWord((prevWord) => {
-          const currentIndex = words.indexOf(prevWord);
-          return words[(currentIndex + 1) % words.length];
-        });
-        setIsAnimating(false);
-      }, 500); // Smooth transition time
-    }, 2500);
-
-    return () => clearInterval(interval);
-  }, []);
+  
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center text-black bg-white px-4 relative">
@@ -52,18 +39,18 @@ const HomePage = () => {
         {/* Fixed Text with Animated Last Word */}
         <div className="text-2xl md:text-2xl font-medium mb-12 flex items-center justify-center">
           <span className="whitespace-nowrap">Transforming NPTEL progress tracking into an&nbsp;</span>
-          <span className="relative inline-block min-w-[140px]">
-            <span
-              className={`
-                text-[#990011] 
-                inline-block 
-                transition-transform duration-[800ms] ease-out 
-                ${isAnimating ? "translate-x-[15px] opacity-0" : "translate-x-0 opacity-100"}
-              `}
-            >
-              {currentWord}
-            </span>
-          </span>
+          <RotatingText
+            texts={["Automated", "Real-time", "Streamlined", "Integrated"]}
+            mainClassName="px-2 sm:px-2 md:px-3 text-black overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg bg-[#990011] text-white"
+            staggerFrom={"last"}
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "-120%" }}
+            staggerDuration={0.025}
+            splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+            transition={{ type: "spring", damping: 30, stiffness: 400 }}
+            rotationInterval={2000}
+          />
         </div>
 
         {/* CTA Button */}
